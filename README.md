@@ -4,7 +4,8 @@ Hardening content for the Wearden Go agents. These are draft rules, not a certif
 
 ## Layout
 
-- `linux/ubuntu-24.04/`: original Ubuntu rules and profiles.
+- `linux/ubuntu-22.04/`, `linux/ubuntu-24.04/`: original Ubuntu rules and profiles.
+- `native/linux/ubuntu-22.04/`, `native/linux/ubuntu-24.04/`: matching native manifests and provider limits.
 - `windows/windows-10/`, `windows/windows-11/`, `windows/server-2022/`: original Windows rules and profiles.
 - Each version directory has `benchmark.yaml` metadata and category files with a `controls` list.
 - `upstream/complianceascode/`: pinned upstream reference files. These are Jinja-templated source content, not directly executable Wearden rules.
@@ -16,7 +17,7 @@ Hardening content for the Wearden Go agents. These are draft rules, not a certif
 
 Benchmark metadata contains `id`, `os`, `name`, `version` and `profiles`. A profile selects `controls: all` or explicit `control_ids`. Each control has a stable ID, `cis_ref`, title, OS, category, level, severity, description, rationale, impact, MITRE references, audit, remediation, rollback and reboot/risk flags. Audit has `type`, `command`, `expected` and `match`. The original schema is unchanged; its Python definition remains the legacy reference until the Go validator is implemented.
 
-Legacy IDs and draft CIS references are preserved for traceability, not independently verified. In particular `full-top-100` is a historical profile ID; Ubuntu currently contains 88 controls. Do not infer 100 checks or certified compliance from names.
+Legacy IDs and draft CIS references are preserved for traceability, not independently verified. In particular `full-top-100` is a historical profile ID; Ubuntu24.04 contains88 controls and Ubuntu22.04 contains100 controls. Do not infer 100 checks or certified compliance from names.
 
 ## Sources and usage
 
