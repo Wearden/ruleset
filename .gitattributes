@@ -1,0 +1,5 @@
+# Preserve imported content and digest-pinned native manifests byte-for-byte.
+*.yaml -text
+*.yml -text
+native/**/*.json -text
+upstream/** -text

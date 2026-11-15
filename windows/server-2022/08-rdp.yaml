@@ -1,0 +1,174 @@
+controls:
+  - id: WIN-RDP-001
+    cis_ref: "18.9.65.3.9.2"
+    title: "Ensure Network Level Authentication is required for Remote Desktop"
+    os: windows
+    category: "Remote Desktop settings"
+    level: 1
+    severity: high
+    description: "Makes clients prove their identity before the Remote Desktop session starts."
+    rationale: "NLA stops unauthenticated users from reaching the logon screen, which blocks many RDP exploits."
+    impact: "Very old RDP clients that do not support NLA cannot connect. Enable NLA only after confirming the client versions."
+    mitre_attack: ["T1021.001", "T1210"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'UserAuthentication' -ErrorAction SilentlyContinue).UserAuthentication
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
+          name: UserAuthentication
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'UserAuthentication' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-RDP-002
+    cis_ref: "18.9.65.3.9.1"
+    title: "Ensure Remote Desktop encryption level is High"
+    os: windows
+    category: "Remote Desktop settings"
+    level: 1
+    severity: medium
+    description: "Requires the highest RDP encryption level for every session."
+    rationale: "Lower levels allow weaker ciphers that are easier to break on the network."
+    impact: "Very old clients that only support low encryption cannot connect."
+    mitre_attack: ["T1040", "T1557"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'MinEncryptionLevel' -ErrorAction SilentlyContinue).MinEncryptionLevel
+      expected: "3"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
+          name: MinEncryptionLevel
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'MinEncryptionLevel' -Value 3 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-RDP-003
+    cis_ref: "18.9.65.3.10.1"
+    title: "Ensure idle Remote Desktop sessions time out after 15 minutes"
+    os: windows
+    category: "Remote Desktop settings"
+    level: 1
+    severity: medium
+    description: "Ends an RDP session that has had no input for 15 minutes."
+    rationale: "Idle sessions left open are a ready-made takeover path."
+    impact: "Users must reconnect after long idle periods."
+    mitre_attack: ["T1563"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'MaxIdleTime' -ErrorAction SilentlyContinue).MaxIdleTime
+      expected: "900000"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'
+          name: MaxIdleTime
+      command: |-
+        New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'MaxIdleTime' -Value 900000 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-RDP-004
+    cis_ref: "18.9.65.3.10.2"
+    title: "Ensure disconnected Remote Desktop sessions end within one minute"
+    os: windows
+    category: "Remote Desktop settings"
+    level: 1
+    severity: low
+    description: "Logs off a disconnected RDP session after one minute."
+    rationale: "Disconnected sessions keep credentials in memory and keep access open."
+    impact: "Users who disconnect lose their session state quickly."
+    mitre_attack: ["T1563"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'MaxDisconnectionTime' -ErrorAction SilentlyContinue).MaxDisconnectionTime
+      expected: "60000"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'
+          name: MaxDisconnectionTime
+      command: |-
+        New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'MaxDisconnectionTime' -Value 60000 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-RDP-005
+    cis_ref: "18.9.65.3.3.3"
+    title: "Ensure drive redirection is not allowed in Remote Desktop sessions"
+    os: windows
+    category: "Remote Desktop settings"
+    level: 1
+    severity: medium
+    description: "Stops a remote session from mapping this machine's local drives into the remote desktop."
+    rationale: "Drive redirection is a route for data theft and malware to move between the machines."
+    impact: "Users cannot copy files to or from local drives through the RDP session."
+    mitre_attack: ["T1119", "T1020"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'fDisableCdm' -ErrorAction SilentlyContinue).fDisableCdm
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'
+          name: fDisableCdm
+      command: |-
+        New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'fDisableCdm' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-RDP-006
+    cis_ref: "18.9.65.3.9.5"
+    title: "Ensure Remote Desktop does not save passwords"
+    os: windows
+    category: "Remote Desktop settings"
+    level: 1
+    severity: medium
+    description: "Stops the RDP client from saving passwords for later reconnects."
+    rationale: "Saved RDP passwords can be recovered by anyone who gets into the client's profile."
+    impact: "Users retype their password for each new RDP connection."
+    mitre_attack: ["T1555", "T1552"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'DisablePasswordSaving' -ErrorAction SilentlyContinue).DisablePasswordSaving
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'
+          name: DisablePasswordSaving
+      command: |-
+        New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'DisablePasswordSaving' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

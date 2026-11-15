@@ -1,0 +1,37 @@
+id: windows-server-2022-cis
+os: windows
+name: "CIS Microsoft Windows Server 2022 (Level 1, curated Top 100)"
+version: "0.1-draft"
+# cis_ref values are mapped from the CIS Windows Server 2022 benchmark and MUST be verified against the licensed PDF
+# before publication. Windows 10/11 variants differ in some values; see docs when they are added.
+# Audit commands are PowerShell and run with administrator rights. Localised Windows may print
+# net accounts labels in another language; the regex parsers then return no value and the control reports fail.
+profiles:
+  - id: full-top-100
+    name: "Full Top 100"
+    description: "All 100 Level 1 controls."
+    controls: all
+  - id: quick-20
+    name: "Quick 20"
+    description: "20 low-risk, high-impact controls that run fast."
+    control_ids:
+      - WIN-PWD-001
+      - WIN-PWD-002
+      - WIN-PWD-004
+      - WIN-PWD-006
+      - WIN-URA-001
+      - WIN-URA-002
+      - WIN-SEC-001
+      - WIN-SEC-006
+      - WIN-SEC-011
+      - WIN-FW-007
+      - WIN-AUD-001
+      - WIN-AUD-006
+      - WIN-AUD-013
+      - WIN-SVC-001
+      - WIN-SVC-002
+      - WIN-SMB-001
+      - WIN-SMB-003
+      - WIN-RDP-002
+      - WIN-DEF-001
+      - WIN-DEF-006

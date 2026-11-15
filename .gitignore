@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.reference-cache/
+# This profile explicitly includes CIS content. Keep local until licensing review.
+upstream/complianceascode/products/ubuntu2404/profiles/cis_level1_server.profile
+node_modules/
+dist/
+.pytest_cache/
+*.db

@@ -1,0 +1,293 @@
+controls:
+  - id: WIN-SMB-001
+    cis_ref: "2.3.1.7"
+    title: "Ensure LAN Manager authentication level is NTLMv2 only (level 5)"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: high
+    description: "Makes Windows send and accept only NTLMv2 responses, never the weak LM or NTLMv1 forms."
+    rationale: "LM and NTLMv1 responses can be cracked quickly, which makes captured logons easy to abuse."
+    impact: "Very old clients that only speak LM or NTLMv1 cannot authenticate."
+    mitre_attack: ["T1557.001", "T1550.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'LmCompatibilityLevel' -ErrorAction SilentlyContinue).LmCompatibilityLevel
+      expected: "5"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: LmCompatibilityLevel
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'LmCompatibilityLevel' -Value 5 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SMB-002
+    cis_ref: "2.3.11.5"
+    title: "Ensure the LAN Manager hash is not stored"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: high
+    description: "Stops Windows storing the weak LM password hash in the local security database."
+    rationale: "LM hashes can be cracked in seconds, so storing them gives an attacker an easy win."
+    impact: "Very old applications that need LM hashes will fail."
+    mitre_attack: ["T1003.002", "T1110.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'NoLMHash' -ErrorAction SilentlyContinue).NoLMHash
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: NoLMHash
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'NoLMHash' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: true
+    risky: false
+
+  - id: WIN-SMB-003
+    cis_ref: "18.3.2"
+    title: "Ensure SMBv1 is disabled on the server"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: critical
+    description: "Turns off the SMB version 1 server, the protocol behind WannaCry and EternalBlue."
+    rationale: "SMBv1 has wormable remote code execution flaws that need no logon."
+    impact: "Machines still using SMBv1 shares will lose access. Upgrade those clients first."
+    mitre_attack: ["T1210", "T1021.002"]
+    audit:
+      type: command
+      command: |-
+        (Get-SmbServerConfiguration).EnableSMB1Protocol
+      expected: "False"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-SmbServerConfiguration"
+      command: |-
+        Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
+    rollback:
+      strategy: command
+      command: |-
+        Set-SmbServerConfiguration -EnableSMB1Protocol {before} -Force
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SMB-004
+    cis_ref: "18.3.3"
+    title: "Ensure the SMBv1 client driver is disabled"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: high
+    description: "Disables the SMBv1 client driver so this machine cannot be pulled into SMBv1 sessions."
+    rationale: "An SMBv1 client can be abused by a rogue server to exploit old flaws."
+    impact: "Connections to SMBv1-only servers fail."
+    mitre_attack: ["T1210", "T1557"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\mrxsmb10' -Name 'Start' -ErrorAction SilentlyContinue).Start
+      expected: "4"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Services\mrxsmb10'
+          name: Start
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\mrxsmb10' -Name 'Start' -Value 4 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: true
+    risky: false
+
+  - id: WIN-SMB-005
+    cis_ref: "2.3.9.2"
+    title: "Ensure SMB server requires packet signing"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: high
+    description: "Requires the SMB file server to sign every packet."
+    rationale: "Signing blocks SMB relay attacks, a common step in credential theft."
+    impact: "Old clients that cannot sign will not connect to this server."
+    mitre_attack: ["T1557.001"]
+    audit:
+      type: command
+      command: |-
+        (Get-SmbServerConfiguration).RequireSecuritySignature
+      expected: "True"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-SmbServerConfiguration"
+      command: |-
+        Set-SmbServerConfiguration -RequireSecuritySignature $true -Force
+    rollback:
+      strategy: command
+      command: |-
+        Set-SmbServerConfiguration -RequireSecuritySignature {before} -Force
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SMB-006
+    cis_ref: "2.3.8.1"
+    title: "Ensure SMB client requires packet signing"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: high
+    description: "Requires this machine's SMB client to sign every packet it sends."
+    rationale: "Stops a rogue file server from tampering with or relaying this machine's requests."
+    impact: "Connections to file servers that do not sign will fail."
+    mitre_attack: ["T1557.001"]
+    audit:
+      type: command
+      command: |-
+        (Get-SmbClientConfiguration).RequireSecuritySignature
+      expected: "True"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-SmbClientConfiguration"
+      command: |-
+        Set-SmbClientConfiguration -RequireSecuritySignature $true -Force
+    rollback:
+      strategy: command
+      command: |-
+        Set-SmbClientConfiguration -RequireSecuritySignature {before} -Force
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SMB-007
+    cis_ref: "2.3.11.7"
+    title: "Ensure outgoing NTLM traffic to remote servers is denied"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: medium
+    description: "Stops this machine sending NTLM logons to remote servers, pushing applications to Kerberos."
+    rationale: "NTLM relay and pass-the-hash need outgoing NTLM. Blocking it removes the path."
+    impact: "Applications that rely on NTLM to remote servers will fail. Audit NTLM use first."
+    mitre_attack: ["T1550.002", "T1557.001"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Name 'RestrictSendingNTLMTraffic' -ErrorAction SilentlyContinue).RestrictSendingNTLMTraffic
+      expected: "2"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0'
+          name: RestrictSendingNTLMTraffic
+      command: |-
+        if (-not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0')) { New-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Force | Out-Null }; Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Name 'RestrictSendingNTLMTraffic' -Value 2 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SMB-008
+    cis_ref: "2.3.11.8"
+    title: "Ensure NTLM clients use NTLMv2 with 128-bit session security"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: medium
+    description: "Requires NTLMv2 and 128-bit encryption for NTLM sessions that this machine starts."
+    rationale: "Weaker NTLM session security makes captured exchanges easier to crack."
+    impact: "Clients that only offer weaker NTLM sessions fail to connect."
+    mitre_attack: ["T1557.001"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Name 'NTLMMinClientSec' -ErrorAction SilentlyContinue).NTLMMinClientSec
+      expected: "537395200"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0'
+          name: NTLMMinClientSec
+      command: |-
+        if (-not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0')) { New-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Force | Out-Null }; Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Name 'NTLMMinClientSec' -Value 537395200 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SMB-009
+    cis_ref: "2.3.10.10"
+    title: "Ensure null sessions are restricted on the file server"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: high
+    description: "Stops anonymous (null) sessions from reaching the named pipes and shares of this server."
+    rationale: "Null sessions let anonymous users enumerate systems and accounts."
+    impact: "Legacy tools that query anonymously stop working."
+    mitre_attack: ["T1135", "T1087"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'RestrictNullSessAccess' -ErrorAction SilentlyContinue).RestrictNullSessAccess
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters'
+          name: RestrictNullSessAccess
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'RestrictNullSessAccess' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SMB-010
+    cis_ref: "2.3.10.9"
+    title: "Ensure anonymous access to named pipes is removed"
+    os: windows
+    category: "SMB, NTLM and LSA hardening"
+    level: 1
+    severity: medium
+    description: "Removes the list of named pipes that anonymous users may open."
+    rationale: "Each open pipe is an unauthenticated entry point into a service."
+    impact: "Anonymous clients of those named pipes stop working."
+    mitre_attack: ["T1135", "T1021.002"]
+    audit:
+      type: command
+      command: |-
+        $v = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'NullSessionPipes' -ErrorAction SilentlyContinue).NullSessionPipes; if ($v) { $v -join ',' } else { 'none' }
+      expected: "none"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters'
+          name: NullSessionPipes
+      command: |-
+        Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'NullSessionPipes' -ErrorAction SilentlyContinue
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

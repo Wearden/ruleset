@@ -1,0 +1,282 @@
+controls:
+  - id: LNX-PAM-001
+    cis_ref: "5.3.3.1.1"
+    title: "Ensure password quality checking (libpam-pwquality) is installed"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: medium
+    description: "Installs the library that rejects weak passwords when they are set."
+    rationale: "Without a quality check, users choose easily guessed passwords."
+    impact: "Users must choose stronger passwords when they change them."
+    mitre_attack: ["T1110.001", "T1078"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' libpam-pwquality 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W libpam-pwquality"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y libpam-pwquality
+    rollback:
+      strategy: command
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get remove -y libpam-pwquality
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PAM-002
+    cis_ref: "5.3.3.2.2"
+    title: "Ensure minimum password length is 14 characters"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: high
+    description: "Requires new passwords to be at least 14 characters long."
+    rationale: "Length is the strongest single defence against password guessing and cracking."
+    impact: "Users with shorter passwords must change them at their next password change."
+    mitre_attack: ["T1110.002", "T1078"]
+    audit:
+      type: command
+      command: |-
+        sed -n 's/^[[:space:]]*minlen[[:space:]]*=[[:space:]]*//p' /etc/security/pwquality.conf 2>/dev/null | tail -n 1
+      expected: "14"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/security/pwquality.conf
+      command: |-
+        f=/etc/security/pwquality.conf; grep -q '^[[:space:]]*minlen' $f && sed -i 's/^[[:space:]]*minlen.*/minlen = 14/' $f || echo 'minlen = 14' >> $f
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PAM-003
+    cis_ref: "5.3.3.2.3"
+    title: "Ensure passwords require at least one digit"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: low
+    description: "Requires at least one digit in new passwords."
+    rationale: "Character-class rules raise the cost of brute-force guessing."
+    impact: "Users must include a digit when they change passwords."
+    mitre_attack: ["T1110.002"]
+    audit:
+      type: command
+      command: |-
+        sed -n 's/^[[:space:]]*dcredit[[:space:]]*=[[:space:]]*//p' /etc/security/pwquality.conf 2>/dev/null | tail -n 1
+      expected: "-1"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/security/pwquality.conf
+      command: |-
+        f=/etc/security/pwquality.conf; grep -q '^[[:space:]]*dcredit' $f && sed -i 's/^[[:space:]]*dcredit.*/dcredit = -1/' $f || echo 'dcredit = -1' >> $f
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PAM-004
+    cis_ref: "5.3.3.2.4"
+    title: "Ensure passwords require at least one uppercase letter"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: low
+    description: "Requires at least one uppercase letter in new passwords."
+    rationale: "Character-class rules raise the cost of brute-force guessing."
+    impact: "Users must include an uppercase letter when they change passwords."
+    mitre_attack: ["T1110.002"]
+    audit:
+      type: command
+      command: |-
+        sed -n 's/^[[:space:]]*ucredit[[:space:]]*=[[:space:]]*//p' /etc/security/pwquality.conf 2>/dev/null | tail -n 1
+      expected: "-1"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/security/pwquality.conf
+      command: |-
+        f=/etc/security/pwquality.conf; grep -q '^[[:space:]]*ucredit' $f && sed -i 's/^[[:space:]]*ucredit.*/ucredit = -1/' $f || echo 'ucredit = -1' >> $f
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PAM-005
+    cis_ref: "5.3.3.2.5"
+    title: "Ensure passwords require at least one lowercase letter"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: low
+    description: "Requires at least one lowercase letter in new passwords."
+    rationale: "Character-class rules raise the cost of brute-force guessing."
+    impact: "Users must include a lowercase letter when they change passwords."
+    mitre_attack: ["T1110.002"]
+    audit:
+      type: command
+      command: |-
+        sed -n 's/^[[:space:]]*lcredit[[:space:]]*=[[:space:]]*//p' /etc/security/pwquality.conf 2>/dev/null | tail -n 1
+      expected: "-1"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/security/pwquality.conf
+      command: |-
+        f=/etc/security/pwquality.conf; grep -q '^[[:space:]]*lcredit' $f && sed -i 's/^[[:space:]]*lcredit.*/lcredit = -1/' $f || echo 'lcredit = -1' >> $f
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PAM-006
+    cis_ref: "5.3.3.2.6"
+    title: "Ensure passwords require at least one special character"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: low
+    description: "Requires at least one symbol in new passwords."
+    rationale: "Character-class rules raise the cost of brute-force guessing."
+    impact: "Users must include a symbol when they change passwords."
+    mitre_attack: ["T1110.002"]
+    audit:
+      type: command
+      command: |-
+        sed -n 's/^[[:space:]]*ocredit[[:space:]]*=[[:space:]]*//p' /etc/security/pwquality.conf 2>/dev/null | tail -n 1
+      expected: "-1"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/security/pwquality.conf
+      command: |-
+        f=/etc/security/pwquality.conf; grep -q '^[[:space:]]*ocredit' $f && sed -i 's/^[[:space:]]*ocredit.*/ocredit = -1/' $f || echo 'ocredit = -1' >> $f
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PAM-007
+    cis_ref: "5.3.3.3.1"
+    title: "Ensure password reuse is limited (remember the last 5 passwords)"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: medium
+    description: "Stops users re-using one of their five most recent passwords."
+    rationale: "Password reuse lets a leaked old password work again."
+    impact: "Users cannot cycle between a few favourite passwords."
+    mitre_attack: ["T1110.001"]
+    audit:
+      type: command
+      command: |-
+        grep -E 'pam_pwhistory' /etc/pam.d/common-password 2>/dev/null | grep -o 'remember=[0-9]*' | cut -d= -f2 | tail -n 1
+      expected: "5"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/pam.d/common-password
+      command: |-
+        f=/etc/pam.d/common-password; grep -q pam_pwhistory $f || sed -i '/pam_unix.so/i password required pam_pwhistory.so use_authtok remember=5' $f; sed -i -E '/pam_pwhistory/ s/remember=[0-9]+/remember=5/' $f
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: LNX-PAM-008
+    cis_ref: "5.3.3.1.2"
+    title: "Ensure account lockout after repeated failed logins (faillock deny 5 or less)"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: high
+    description: "Locks an account for a period after five failed login attempts."
+    rationale: "Lockout stops online password guessing against individual accounts."
+    impact: "Attackers and forgetful users alike get locked out for the lock period. Check that the administrator account can still be unlocked before enabling this."
+    mitre_attack: ["T1110.001", "T1110.003"]
+    audit:
+      type: command
+      command: |-
+        sed -n 's/^[[:space:]]*deny[[:space:]]*=[[:space:]]*//p' /etc/security/faillock.conf 2>/dev/null | tail -n 1
+      expected: "5"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/security/faillock.conf
+      command: |-
+        printf 'deny = 5\nunlock_time = 900\n' > /etc/security/faillock.conf
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: LNX-PAM-009
+    cis_ref: "5.4.1.1"
+    title: "Ensure password expiration is 365 days or less"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: low
+    description: "Requires passwords to be changed at least once a year."
+    rationale: "Limits how long a stolen password stays useful."
+    impact: "Users must change passwords yearly. Service accounts may need an exception."
+    mitre_attack: ["T1078"]
+    audit:
+      type: command
+      command: |-
+        awk '$1=="PASS_MAX_DAYS"{print $2}' /etc/login.defs 2>/dev/null | tail -n 1
+      expected: "365"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/login.defs
+      command: |-
+        sed -i -E 's/^PASS_MAX_DAYS[[:space:]]+.*/PASS_MAX_DAYS   365/' /etc/login.defs
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PAM-010
+    cis_ref: "5.4.1.2"
+    title: "Ensure minimum days between password changes is 1 or more"
+    os: linux
+    category: "PAM and password policy"
+    level: 1
+    severity: low
+    description: "Stops users changing their password repeatedly to get back to a favourite one."
+    rationale: "Pairs with the reuse limit so the history check cannot be bypassed."
+    impact: "Users must wait a day between password changes."
+    mitre_attack: ["T1110.001"]
+    audit:
+      type: command
+      command: |-
+        awk '$1=="PASS_MIN_DAYS"{print $2}' /etc/login.defs 2>/dev/null | tail -n 1
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/login.defs
+      command: |-
+        sed -i -E 's/^PASS_MIN_DAYS[[:space:]]+.*/PASS_MIN_DAYS   1/' /etc/login.defs
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

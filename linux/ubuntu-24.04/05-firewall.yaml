@@ -1,0 +1,180 @@
+controls:
+  - id: LNX-FW-001
+    cis_ref: "3.4.1.1"
+    title: "Ensure a host-based firewall (ufw) is installed"
+    os: linux
+    category: "Firewall"
+    level: 1
+    severity: high
+    description: "Installs ufw, a simple front end to the kernel packet filter."
+    rationale: "A host firewall limits which network services an attacker can reach even if one is exposed."
+    impact: "None until the firewall is enabled. Enabling it is a separate control."
+    mitre_attack: ["T1562.004", "T1046"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' ufw 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W ufw"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y ufw
+    rollback:
+      strategy: command
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get remove -y ufw
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FW-002
+    cis_ref: "3.4.2.2"
+    title: "Ensure ufw default policy denies incoming traffic"
+    os: linux
+    category: "Firewall"
+    level: 1
+    severity: high
+    description: "Sets the firewall so inbound connections are dropped unless a rule allows them."
+    rationale: "Default-deny means only deliberately opened services are reachable."
+    impact: "Every inbound service not yet allowed (SSH, RDP, WinRM, web) is blocked. Allow SSH first (LNX-FW-004), or you can lock yourself out."
+    mitre_attack: ["T1562.004", "T1021"]
+    audit:
+      type: command
+      command: |-
+        ufw status verbose 2>/dev/null | grep -i '^Default:' | grep -ci 'deny (incoming)' || true
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "ufw status verbose"
+      command: |-
+        ufw default deny incoming
+    rollback:
+      strategy: command
+      command: |-
+        ufw default allow incoming
+    reboot_required: false
+    risky: true
+
+  - id: LNX-FW-003
+    cis_ref: "3.4.2.3"
+    title: "Ensure ufw default policy denies outgoing traffic"
+    os: linux
+    category: "Firewall"
+    level: 1
+    severity: medium
+    description: "Blocks outbound connections that have no explicit allow rule."
+    rationale: "Default-deny outbound stops malware from calling home unless it is allowed."
+    impact: "Package updates, DNS and NTP stop working until you allow them. Plan the outbound rules first."
+    mitre_attack: ["T1041", "T1571"]
+    audit:
+      type: command
+      command: |-
+        ufw status verbose 2>/dev/null | grep -i '^Default:' | grep -ci 'deny (outgoing)' || true
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "ufw status verbose"
+      command: |-
+        ufw allow out 53 && ufw allow out 80/tcp && ufw allow out 443/tcp && ufw allow out 123/udp && ufw default deny outgoing
+    rollback:
+      strategy: command
+      command: |-
+        ufw default allow outgoing
+    reboot_required: false
+    risky: true
+
+  - id: LNX-FW-004
+    cis_ref: "3.4.2.4"
+    title: "Ensure SSH is allowed through the firewall before enabling it"
+    os: linux
+    category: "Firewall"
+    level: 1
+    severity: high
+    description: "Adds an allow rule for the SSH port so remote administration keeps working behind the firewall."
+    rationale: "A firewall that blocks SSH locks administrators out. This rule is the safety net."
+    impact: "Opens the SSH port to whoever the rule allows. Narrow the source address in production."
+    mitre_attack: ["T1021.004"]
+    audit:
+      type: command
+      command: |-
+        ufw status 2>/dev/null | grep -cE '(^|[^0-9])22(/tcp)?[[:space:]]+ALLOW' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: command
+          path: "ufw status numbered"
+      command: |-
+        ufw allow 22/tcp
+    rollback:
+      strategy: command
+      command: |-
+        ufw delete allow 22/tcp
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FW-005
+    cis_ref: "3.4.2.1"
+    title: "Ensure ufw is enabled"
+    os: linux
+    category: "Firewall"
+    level: 1
+    severity: high
+    description: "Turns the firewall on so the default policy and rules take effect."
+    rationale: "Configured but disabled rules protect nothing."
+    impact: "Can lock out remote administration if SSH, RDP or WinRM are not allowed first. The remediation allows SSH before enabling."
+    mitre_attack: ["T1562.004"]
+    audit:
+      type: command
+      command: |-
+        ufw status 2>/dev/null | head -n 1
+      expected: "Status: active"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "ufw status verbose"
+      command: |-
+        ufw allow 22/tcp && ufw --force enable
+    rollback:
+      strategy: command
+      command: |-
+        ufw disable
+    reboot_required: false
+    risky: true
+
+  - id: LNX-FW-006
+    cis_ref: "3.4.3"
+    title: "Ensure ufw logging is enabled"
+    os: linux
+    category: "Firewall"
+    level: 1
+    severity: low
+    description: "Records blocked and allowed connections in the system log."
+    rationale: "Firewall logs are how blocked attack attempts become visible."
+    impact: "Log volume increases on busy hosts."
+    mitre_attack: ["T1562.002", "T1595"]
+    audit:
+      type: command
+      command: |-
+        ufw status verbose 2>/dev/null | grep -i '^Logging:' | grep -ci 'on' || true
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "ufw status verbose"
+      command: |-
+        ufw logging on
+    rollback:
+      strategy: command
+      command: |-
+        ufw logging off
+    reboot_required: false
+    risky: false

@@ -1,0 +1,535 @@
+{
+  "version": "1",
+  "benchmark_id": "ubuntu-24.04-native",
+  "ruleset_version": "native-linux-3",
+  "rules": [
+    {
+      "id": "LNX-FS-001",
+      "kind": "kernel_module",
+      "target": "cramfs",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-002",
+      "kind": "kernel_module",
+      "target": "freevxfs",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-003",
+      "kind": "kernel_module",
+      "target": "jffs2",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-004",
+      "kind": "kernel_module",
+      "target": "hfs",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-005",
+      "kind": "kernel_module",
+      "target": "hfsplus",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-006",
+      "kind": "mount_options",
+      "target": "/var/tmp",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-FS-007",
+      "kind": "kernel_module",
+      "target": "udf",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-008",
+      "kind": "kernel_module",
+      "target": "usb-storage",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-FS-009",
+      "kind": "mount_options",
+      "target": "/tmp",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-FS-010",
+      "kind": "mount_options",
+      "target": "/dev/shm",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-PKG-001",
+      "kind": "package_installed",
+      "target": "unattended-upgrades",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-PKG-002",
+      "kind": "package_installed",
+      "target": "aide",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-PKG-003",
+      "kind": "package_installed",
+      "target": "sudo",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-PKG-004",
+      "kind": "apt_https",
+      "target": "reviewed-apt-sources",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-PKG-005",
+      "kind": "apt_authentication",
+      "target": "reviewed-apt-authentication",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-SVC-001",
+      "kind": "service_disabled",
+      "target": "avahi-daemon.service",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-SVC-002",
+      "kind": "service_disabled",
+      "target": "cups.service",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-SVC-003",
+      "kind": "service_disabled",
+      "target": "isc-dhcp-server.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-004",
+      "kind": "service_disabled",
+      "target": "slapd.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-005",
+      "kind": "service_disabled",
+      "target": "nfs-server.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-006",
+      "kind": "service_disabled",
+      "target": "rpcbind.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-007",
+      "kind": "service_disabled",
+      "target": "rsync.service",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-SVC-008",
+      "kind": "service_disabled",
+      "target": "named.service,bind9.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-009",
+      "kind": "service_disabled",
+      "target": "vsftpd.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-010",
+      "kind": "service_disabled",
+      "target": "snmpd.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-011",
+      "kind": "service_disabled",
+      "target": "xinetd.service",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SVC-012",
+      "kind": "service_disabled",
+      "target": "telnet.socket",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-NET-001",
+      "kind": "sysctl",
+      "target": "net.ipv4.ip_forward",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-002",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.all.send_redirects",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-003",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.default.send_redirects",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-004",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.all.accept_source_route",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-NET-005",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.default.accept_source_route",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-NET-006",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.all.accept_redirects",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-NET-007",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.default.accept_redirects",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-NET-008",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.all.secure_redirects",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-009",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.all.log_martians",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-010",
+      "kind": "sysctl",
+      "target": "net.ipv4.icmp_echo_ignore_broadcasts",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-NET-011",
+      "kind": "sysctl",
+      "target": "net.ipv4.tcp_syncookies",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-012",
+      "kind": "sysctl",
+      "target": "kernel.randomize_va_space",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-FW-001",
+      "kind": "package_installed",
+      "target": "ufw",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-FW-002",
+      "kind": "ufw_runtime",
+      "target": "LNX-FW-002",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-FW-003",
+      "kind": "ufw_runtime",
+      "target": "LNX-FW-003",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-FW-004",
+      "kind": "ufw_runtime",
+      "target": "LNX-FW-004",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-FW-005",
+      "kind": "ufw_runtime",
+      "target": "LNX-FW-005",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-FW-006",
+      "kind": "ufw_runtime",
+      "target": "LNX-FW-006",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-LOG-001",
+      "kind": "journald_config",
+      "target": "Storage",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-LOG-002",
+      "kind": "journald_config",
+      "target": "Compress",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-LOG-003",
+      "kind": "file_metadata",
+      "target": "/var/log/auth.log",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-LOG-004",
+      "kind": "package_installed",
+      "target": "rsyslog",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-LOG-005",
+      "kind": "package_installed",
+      "target": "logrotate",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-LOG-006",
+      "kind": "sudo_logfile",
+      "target": "/etc/sudoers",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-001",
+      "kind": "file_metadata",
+      "target": "/etc/ssh/sshd_config",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-SSH-002",
+      "kind": "sshd_config",
+      "target": "loglevel",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-003",
+      "kind": "sshd_config",
+      "target": "x11forwarding",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-004",
+      "kind": "sshd_config",
+      "target": "maxauthtries",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-005",
+      "kind": "sshd_config",
+      "target": "ignorerhosts",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-006",
+      "kind": "sshd_config",
+      "target": "hostbasedauthentication",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-SSH-007",
+      "kind": "sshd_config",
+      "target": "permitrootlogin",
+      "severity": "critical"
+    },
+    {
+      "id": "LNX-SSH-008",
+      "kind": "sshd_config",
+      "target": "permitemptypasswords",
+      "severity": "critical"
+    },
+    {
+      "id": "LNX-SSH-009",
+      "kind": "sshd_config",
+      "target": "permituserenvironment",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-010",
+      "kind": "sshd_config",
+      "target": "clientaliveinterval",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-011",
+      "kind": "sshd_config",
+      "target": "clientalivecountmax",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-SSH-012",
+      "kind": "sshd_config",
+      "target": "logingracetime",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-SSH-013",
+      "kind": "sshd_config",
+      "target": "maxsessions",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-SSH-014",
+      "kind": "sshd_config",
+      "target": "usepam",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-SSH-015",
+      "kind": "sshd_config",
+      "target": "banner",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-PAM-001",
+      "kind": "package_installed",
+      "target": "libpam-pwquality",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-PAM-002",
+      "kind": "policy_config",
+      "target": "minlen",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-PAM-003",
+      "kind": "policy_config",
+      "target": "dcredit",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-PAM-004",
+      "kind": "policy_config",
+      "target": "ucredit",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-PAM-005",
+      "kind": "policy_config",
+      "target": "lcredit",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-PAM-006",
+      "kind": "policy_config",
+      "target": "ocredit",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-PAM-007",
+      "kind": "pam_history",
+      "target": "/etc/pam.d/common-password",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-PAM-008",
+      "kind": "policy_config",
+      "target": "deny",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-PAM-009",
+      "kind": "policy_config",
+      "target": "PASS_MAX_DAYS",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-PAM-010",
+      "kind": "policy_config",
+      "target": "PASS_MIN_DAYS",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-USR-001",
+      "kind": "file_metadata",
+      "target": "/etc/passwd",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-USR-002",
+      "kind": "file_metadata",
+      "target": "/etc/shadow",
+      "severity": "critical"
+    },
+    {
+      "id": "LNX-USR-003",
+      "kind": "file_metadata",
+      "target": "/etc/group",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-USR-004",
+      "kind": "file_metadata",
+      "target": "/etc/gshadow",
+      "severity": "critical"
+    },
+    {
+      "id": "LNX-USR-005",
+      "kind": "uid_zero",
+      "target": "/etc/passwd",
+      "severity": "critical"
+    },
+    {
+      "id": "LNX-USR-006",
+      "kind": "unsupported",
+      "target": "native-review-required",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-USR-007",
+      "kind": "filesystem_metadata",
+      "target": "world-writable-files",
+      "severity": "high"
+    },
+    {
+      "id": "LNX-USR-008",
+      "kind": "filesystem_metadata",
+      "target": "unsticky-directories",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-USR-009",
+      "kind": "filesystem_metadata",
+      "target": "orphaned-owners",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-USR-010",
+      "kind": "file_metadata",
+      "target": "/root",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-USR-011",
+      "kind": "file_metadata",
+      "target": "/etc/crontab",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-USR-012",
+      "kind": "file_metadata",
+      "target": "/etc/sudoers",
+      "severity": "high"
+    }
+  ]
+}

@@ -1,0 +1,338 @@
+controls:
+  - id: LNX-AUD-001
+    cis_ref: "4.1.1.1"
+    title: "Ensure auditd is installed"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: high
+    description: "Installs the Linux audit framework that records security-relevant system events."
+    rationale: "Without an audit trail, intrusions and misuse cannot be reconstructed."
+    impact: "None until rules are loaded. Audit logs use disk space."
+    mitre_attack: ["T1562.002", "T1070"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' auditd 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W auditd"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y auditd audispd-plugins
+    rollback:
+      strategy: command
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get remove -y auditd
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-002
+    cis_ref: "4.1.1.2"
+    title: "Ensure auditd service is enabled and running"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: high
+    description: "Starts auditd at boot so events are recorded from the first moment."
+    rationale: "An audit service that is not running records nothing."
+    impact: "None beyond audit log disk use."
+    mitre_attack: ["T1562.002"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled auditd 2>/dev/null || true
+      expected: "enabled"
+      match: equals
+    remediation:
+      backup:
+        - type: service
+          name: auditd
+      command: |-
+        systemctl enable --now auditd
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-003
+    cis_ref: "4.1.3.19"
+    title: "Ensure changes to sudoers are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: high
+    description: "Adds an audit rule that records any write to the sudoers files."
+    rationale: "Changing sudoers is a common step for privilege escalation, so it must leave a trail."
+    impact: "Small increase in audit volume."
+    mitre_attack: ["T1548.003", "T1078"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -c '/etc/sudoers' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-sudoers.rules
+      command: |-
+        printf '%s\n' '-w /etc/sudoers -p wa -k scope' '-w /etc/sudoers.d/ -p wa -k scope' > /etc/audit/rules.d/hardenops-sudoers.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-004
+    cis_ref: "4.1.3.6"
+    title: "Ensure time changes are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: medium
+    description: "Records system clock changes, which attackers use to confuse log timelines."
+    rationale: "Altered timestamps can hide the order of events during an investigation."
+    impact: "Small increase in audit volume."
+    mitre_attack: ["T1070.006"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -cE 'adjtimex|settimeofday|clock_settime' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-time-change.rules
+      command: |-
+        printf '%s\n' '-a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change' '-w /etc/localtime -p wa -k time-change' > /etc/audit/rules.d/hardenops-time-change.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-005
+    cis_ref: "4.1.3.9"
+    title: "Ensure changes to identity files are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: high
+    description: "Records writes to the user and group account files."
+    rationale: "Adding accounts or changing passwords is a common persistence step."
+    impact: "Small increase in audit volume."
+    mitre_attack: ["T1136", "T1098"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -cE '/etc/(passwd|shadow|group|gshadow)' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-identity.rules
+      command: |-
+        printf '%s\n' '-w /etc/passwd -p wa -k identity' '-w /etc/shadow -p wa -k identity' '-w /etc/group -p wa -k identity' '-w /etc/gshadow -p wa -k identity' > /etc/audit/rules.d/hardenops-identity.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-006
+    cis_ref: "4.1.3.5"
+    title: "Ensure system network environment changes are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: medium
+    description: "Records changes to hostname, network configuration and hosts files."
+    rationale: "Network reconfiguration is often part of redirecting traffic to an attacker."
+    impact: "Small increase in audit volume."
+    mitre_attack: ["T1565", "T1557"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -cE 'sethostname|setdomainname|/etc/hosts|/etc/issue' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-network.rules
+      command: |-
+        printf '%s\n' '-a always,exit -F arch=b64 -S sethostname -S setdomainname -k system-locale' '-w /etc/hosts -p wa -k system-locale' '-w /etc/network -p wa -k system-locale' > /etc/audit/rules.d/hardenops-network.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-007
+    cis_ref: "4.1.3.7"
+    title: "Ensure mandatory access control (AppArmor) changes are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: medium
+    description: "Records changes to AppArmor profiles and policy."
+    rationale: "Disabling confinement is a defence-evasion step that should be visible."
+    impact: "Small increase in audit volume."
+    mitre_attack: ["T1562.001"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -c '/etc/apparmor' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-apparmor.rules
+      command: |-
+        printf '%s\n' '-w /etc/apparmor/ -p wa -k MAC-policy' '-w /etc/apparmor.d/ -p wa -k MAC-policy' > /etc/audit/rules.d/hardenops-apparmor.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-008
+    cis_ref: "4.1.3.8"
+    title: "Ensure login and logout events are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: medium
+    description: "Records changes to the files that track logins and failed logins."
+    rationale: "Login history is needed to spot brute-force and misuse."
+    impact: "Small increase in audit volume."
+    mitre_attack: ["T1078", "T1110"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -cE '/var/(log/)?(lastlog|faillock|tallylog)' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-logins.rules
+      command: |-
+        printf '%s\n' '-w /var/log/lastlog -p wa -k logins' '-w /var/run/faillock/ -p wa -k logins' > /etc/audit/rules.d/hardenops-logins.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-009
+    cis_ref: "4.1.3.9"
+    title: "Ensure session initiation information is audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: medium
+    description: "Records changes to the files that track current and past sessions."
+    rationale: "Session records show who was logged in and when."
+    impact: "Small increase in audit volume."
+    mitre_attack: ["T1078"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -cE 'utmp|wtmp|btmp' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-sessions.rules
+      command: |-
+        printf '%s\n' '-w /var/run/utmp -p wa -k session' '-w /var/log/wtmp -p wa -k session' '-w /var/log/btmp -p wa -k session' > /etc/audit/rules.d/hardenops-sessions.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-010
+    cis_ref: "4.1.3.10"
+    title: "Ensure discretionary access control permission changes are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: medium
+    description: "Records chmod, chown and extended-attribute changes."
+    rationale: "Permission changes are used to expose protected files."
+    impact: "Audit volume rises on hosts with many file operations."
+    mitre_attack: ["T1222"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -cE 'chmod|chown|setxattr' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-dac.rules
+      command: |-
+        printf '%s\n' '-a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=unset -k perm_mod' '-a always,exit -F arch=b64 -S chown -S fchown -S lchown -F auid>=1000 -F auid!=unset -k perm_mod' > /etc/audit/rules.d/hardenops-dac.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-011
+    cis_ref: "4.1.3.11"
+    title: "Ensure unsuccessful file access attempts are audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: medium
+    description: "Records file operations that fail with permission errors."
+    rationale: "Repeated access denials point to probing or attempted data theft."
+    impact: "Audit volume rises if applications generate many denials."
+    mitre_attack: ["T1083", "T1005"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -c 'EACCES' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-access-denied.rules
+      command: |-
+        printf '%s\n' '-a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=unset -k access' '-a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=unset -k access' > /etc/audit/rules.d/hardenops-access-denied.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-AUD-012
+    cis_ref: "4.1.3.21"
+    title: "Ensure privileged command execution is audited"
+    os: linux
+    category: "Auditing (auditd)"
+    level: 1
+    severity: high
+    description: "Records programs executed with elevated privileges such as setuid binaries and sudo."
+    rationale: "Privileged execution is how a normal user becomes root. It must be traceable."
+    impact: "Audit volume rises on hosts where privileged programs run often."
+    mitre_attack: ["T1548", "T1068"]
+    audit:
+      type: command
+      command: |-
+        auditctl -l 2>/dev/null | grep -c 'uid!=euid\|euid!=uid\|execve' || true
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/audit/rules.d/hardenops-privileged.rules
+      command: |-
+        printf '%s\n' '-a always,exit -F arch=b64 -S execve -C uid!=euid -F auid!=unset -k privileged' > /etc/audit/rules.d/hardenops-privileged.rules && augenrules --load
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

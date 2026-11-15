@@ -1,0 +1,266 @@
+controls:
+  - id: WIN-DEF-001
+    cis_ref: "18.9.45.4.1"
+    title: "Ensure Microsoft Defender real-time protection is on"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: critical
+    description: "Keeps Defender scanning files and processes as they are opened or run."
+    rationale: "Real-time protection is the first line of defence against malware execution."
+    impact: "None for normal use. Some third-party AV products may disable Defender. In that case the control is not applicable."
+    mitre_attack: ["T1562.001", "T1204"]
+    audit:
+      type: command
+      command: |-
+        (Get-MpPreference).DisableRealtimeMonitoring
+      expected: "False"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-MpPreference"
+      command: |-
+        Set-MpPreference -DisableRealtimeMonitoring $false
+    rollback:
+      strategy: command
+      command: |-
+        Set-MpPreference -DisableRealtimeMonitoring {before}
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-002
+    cis_ref: "18.9.45.5.1"
+    title: "Ensure Microsoft cloud-delivered protection is set to Advanced"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: medium
+    description: "Sends file samples to the cloud for faster detection of new threats."
+    rationale: "Cloud lookups catch new malware in minutes instead of days."
+    impact: "File metadata is sent to Microsoft. Review the privacy statement before enabling in regulated environments."
+    mitre_attack: ["T1204"]
+    audit:
+      type: command
+      command: |-
+        (Get-MpPreference).MAPSReporting
+      expected: "2"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-MpPreference"
+      command: |-
+        Set-MpPreference -MAPSReporting Advanced
+    rollback:
+      strategy: command
+      command: |-
+        Set-MpPreference -MAPSReporting {before}
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-003
+    cis_ref: "18.9.45.4.3"
+    title: "Ensure potentially unwanted application protection is enabled"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: medium
+    description: "Blocks adware, bundled toolbars and other unwanted software."
+    rationale: "Unwanted applications are often the first stage of a wider compromise."
+    impact: "Some legitimate tools flagged as unwanted will be blocked."
+    mitre_attack: ["T1204"]
+    audit:
+      type: command
+      command: |-
+        (Get-MpPreference).PUAProtection
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-MpPreference"
+      command: |-
+        Set-MpPreference -PUAProtection Enabled
+    rollback:
+      strategy: command
+      command: |-
+        Set-MpPreference -PUAProtection {before}
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-004
+    cis_ref: "18.9.45.4.4"
+    title: "Ensure Defender scans network files"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: medium
+    description: "Scans files opened from network shares for malware."
+    rationale: "Malware often arrives over file shares, so scanning them is the last check before execution."
+    impact: "Slightly slower access to large network files."
+    mitre_attack: ["T1091", "T1105"]
+    audit:
+      type: command
+      command: |-
+        (Get-MpPreference).DisableScanningNetworkFiles
+      expected: "False"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-MpPreference"
+      command: |-
+        Set-MpPreference -DisableScanningNetworkFiles $false
+    rollback:
+      strategy: command
+      command: |-
+        Set-MpPreference -DisableScanningNetworkFiles {before}
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-005
+    cis_ref: "18.9.45.4.5"
+    title: "Ensure Defender network protection is enabled"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: high
+    description: "Blocks outbound connections to known malicious domains and IP addresses."
+    rationale: "Stops browsers and applications from reaching command-and-control servers."
+    impact: "Connections to sites Defender marks as malicious are blocked."
+    mitre_attack: ["T1071", "T1573"]
+    audit:
+      type: command
+      command: |-
+        (Get-MpPreference).EnableNetworkProtection
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "Get-MpPreference"
+      command: |-
+        Set-MpPreference -EnableNetworkProtection Enabled
+    rollback:
+      strategy: command
+      command: |-
+        Set-MpPreference -EnableNetworkProtection {before}
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-006
+    cis_ref: "18.9.8.1"
+    title: "Ensure autoplay is turned off for all drives"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: medium
+    description: "Stops Windows running programs automatically from removable media and network shares."
+    rationale: "Autorun is a classic route for USB-borne malware."
+    impact: "Users must open removable media manually."
+    mitre_attack: ["T1091", "T1547"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -Name 'NoDriveTypeAutoRun' -ErrorAction SilentlyContinue).NoDriveTypeAutoRun
+      expected: "255"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+          name: NoDriveTypeAutoRun
+      command: |-
+        New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -Name 'NoDriveTypeAutoRun' -Value 255 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-007
+    cis_ref: "18.9.97.2.1"
+    title: "Ensure Windows Installer always-install-elevated is disabled"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: critical
+    description: "Stops standard users installing MSI packages with administrator rights."
+    rationale: "When this policy is set, any user can install a malicious MSI as SYSTEM, a well-known escalation path."
+    impact: "Users need an administrator to install MSI packages."
+    mitre_attack: ["T1548.002", "T1068"]
+    audit:
+      type: registry
+      command: |-
+        $v = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer' -Name 'AlwaysInstallElevated' -ErrorAction SilentlyContinue).AlwaysInstallElevated; if ($null -eq $v) { 0 } else { $v }
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer'
+          name: AlwaysInstallElevated
+      command: |-
+        New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer' -Name 'AlwaysInstallElevated' -Value 0 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-008
+    cis_ref: "18.9.85.1"
+    title: "Ensure SmartScreen is enabled for apps and files"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: medium
+    description: "Checks downloaded files and apps against Microsoft's reputation service."
+    rationale: "Reputation checks warn users before they run newly seen malicious downloads."
+    impact: "Unknown downloaded programs show a warning before running."
+    mitre_attack: ["T1204.002", "T1566"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name 'EnableSmartScreen' -ErrorAction SilentlyContinue).EnableSmartScreen
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System'
+          name: EnableSmartScreen
+      command: |-
+        New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name 'EnableSmartScreen' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-DEF-009
+    cis_ref: "18.9.5.1"
+    title: "Ensure LSA protection (RunAsPPL) is enabled"
+    os: windows
+    category: "Defender and miscellaneous"
+    level: 1
+    severity: high
+    description: "Runs the Local Security Authority as a protected process so that memory-reading tools cannot dump credentials from it."
+    rationale: "LSA holds cached credentials. Protecting it makes credential dumping much harder."
+    impact: "Some older third-party authentication or security drivers will not load. Requires a restart."
+    mitre_attack: ["T1003.001", "T1556"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'RunAsPPL' -ErrorAction SilentlyContinue).RunAsPPL
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: RunAsPPL
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'RunAsPPL' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: true
+    risky: false

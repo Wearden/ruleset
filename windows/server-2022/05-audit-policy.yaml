@@ -1,0 +1,504 @@
+controls:
+  - id: WIN-AUD-001
+    cis_ref: "17.1.1"
+    title: "Ensure 'Audit Credential Validation' is configured"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records every attempt to validate account credentials on this machine."
+    rationale: "Credential validation events show password guessing and pass-the-hash attempts."
+    impact: "Higher security log volume on busy authentication servers."
+    mitre_attack: ["T1110", "T1550.002"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Credential Validation" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Credential Validation
+      command: |-
+        auditpol /set /subcategory:"Credential Validation" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-002
+    cis_ref: "17.1.2"
+    title: "Ensure 'Audit Kerberos Authentication Service' is configured"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records Kerberos ticket-granting requests."
+    rationale: "Kerberos events reveal ticket abuse such as Golden and Silver ticket attacks."
+    impact: "Higher security log volume on domain controllers."
+    mitre_attack: ["T1558", "T1550.003"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Kerberos Authentication Service" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Kerberos Authentication Service
+      command: |-
+        auditpol /set /subcategory:"Kerberos Authentication Service" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-003
+    cis_ref: "17.1.3"
+    title: "Ensure 'Audit Kerberos Service Ticket Operations' is configured"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records Kerberos service ticket requests."
+    rationale: "Ticket requests for sensitive services reveal lateral movement."
+    impact: "Higher security log volume on domain controllers."
+    mitre_attack: ["T1558.003"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Kerberos Service Ticket Operations" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Kerberos Service Ticket Operations
+      command: |-
+        auditpol /set /subcategory:"Kerberos Service Ticket Operations" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-004
+    cis_ref: "17.2.5"
+    title: "Ensure 'Audit Account Lockout' records failures"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records every account lockout event."
+    rationale: "Lockout bursts are the visible signature of password spraying."
+    impact: "Small increase in security log volume."
+    mitre_attack: ["T1110.003"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Account Lockout" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Account Lockout
+      command: |-
+        auditpol /set /subcategory:"Account Lockout" /success:disable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-005
+    cis_ref: "17.5.6"
+    title: "Ensure 'Audit Logoff' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: low
+    description: "Records when a session ends."
+    rationale: "Pairs logon and logoff events so session length can be reconstructed."
+    impact: "Small increase in security log volume."
+    mitre_attack: ["T1078"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Logoff" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Logoff
+      command: |-
+        auditpol /set /subcategory:"Logoff" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-006
+    cis_ref: "17.5.1"
+    title: "Ensure 'Audit Logon' records successes and failures"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: high
+    description: "Records every sign-in, successful or not, with its logon type."
+    rationale: "Logon events show who got in, from where and how, which is the core of intrusion detection."
+    impact: "Higher security log volume on busy servers."
+    mitre_attack: ["T1078", "T1110"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Logon" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Logon
+      command: |-
+        auditpol /set /subcategory:"Logon" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-007
+    cis_ref: "17.5.4"
+    title: "Ensure 'Audit Special Logon' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records sign-ins that grant special privileges such as administrator rights."
+    rationale: "Privileged sign-ins are the events to review first during an investigation."
+    impact: "Small increase in security log volume."
+    mitre_attack: ["T1078.002", "T1548"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Special Logon" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Special Logon
+      command: |-
+        auditpol /set /subcategory:"Special Logon" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-008
+    cis_ref: "17.5.5"
+    title: "Ensure 'Audit Other Logon/Logoff Events' records successes and failures"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: low
+    description: "Records remote disconnects, locks and other session events."
+    rationale: "Session lock and reconnect events complete the logon timeline."
+    impact: "Small increase in security log volume."
+    mitre_attack: ["T1078"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Other Logon/Logoff Events" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Other Logon/Logoff Events
+      command: |-
+        auditpol /set /subcategory:"Other Logon/Logoff Events" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-009
+    cis_ref: "17.2.4"
+    title: "Ensure 'Audit Security Group Management' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records changes to security group membership."
+    rationale: "Adding an account to Administrators is a key privilege-escalation event."
+    impact: "Small increase in security log volume."
+    mitre_attack: ["T1098", "T1069"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Security Group Management" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Security Group Management
+      command: |-
+        auditpol /set /subcategory:"Security Group Management" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-010
+    cis_ref: "17.2.6"
+    title: "Ensure 'Audit User Account Management' records successes and failures"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: high
+    description: "Records creating, changing, enabling and deleting accounts."
+    rationale: "New or changed accounts are a common step in persistence."
+    impact: "Small increase in security log volume."
+    mitre_attack: ["T1136", "T1098"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"User Account Management" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: User Account Management
+      command: |-
+        auditpol /set /subcategory:"User Account Management" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-011
+    cis_ref: "17.3.1"
+    title: "Ensure 'Audit Process Creation' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: high
+    description: "Records every new process with its command line."
+    rationale: "Process creation events, with command lines, reveal living-off-the-land attacks."
+    impact: "High log volume. Pair with a log collector."
+    mitre_attack: ["T1059", "T1204"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Process Creation" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Process Creation
+      command: |-
+        auditpol /set /subcategory:"Process Creation" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-012
+    cis_ref: "17.7.1"
+    title: "Ensure 'Audit Directory Service Changes' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records changes to objects in Active Directory."
+    rationale: "Directory changes such as adding GPOs or SID history are attack indicators."
+    impact: "Small increase in log volume on domain controllers."
+    mitre_attack: ["T1484.001", "T1098"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Directory Service Changes" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Directory Service Changes
+      command: |-
+        auditpol /set /subcategory:"Directory Service Changes" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-013
+    cis_ref: "17.7.2"
+    title: "Ensure 'Audit Policy Change' records successes and failures"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: high
+    description: "Records changes to the audit policy itself."
+    rationale: "Attackers who switch off auditing first try to hide their activity. This event shows it."
+    impact: "Small increase in security log volume."
+    mitre_attack: ["T1562.002"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Audit Policy Change" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Audit Policy Change
+      command: |-
+        auditpol /set /subcategory:"Audit Policy Change" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-014
+    cis_ref: "17.7.3"
+    title: "Ensure 'Audit Authentication Policy Change' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records changes to trust and authentication policy."
+    rationale: "Weakening authentication policy is a quiet way to make later attacks easier."
+    impact: "Small increase in log volume."
+    mitre_attack: ["T1556", "T1562"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Authentication Policy Change" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Authentication Policy Change
+      command: |-
+        auditpol /set /subcategory:"Authentication Policy Change" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-015
+    cis_ref: "17.8.1"
+    title: "Ensure 'Audit Sensitive Privilege Use' records successes and failures"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: high
+    description: "Records use of powerful rights such as debug and backup privileges."
+    rationale: "Use of sensitive privileges is how credential theft and tampering appear in the log."
+    impact: "High log volume on busy servers."
+    mitre_attack: ["T1003", "T1068"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Sensitive Privilege Use" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Sensitive Privilege Use
+      command: |-
+        auditpol /set /subcategory:"Sensitive Privilege Use" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-016
+    cis_ref: "17.9.4"
+    title: "Ensure 'Audit Security State Change' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: low
+    description: "Records startup, shutdown and system time changes."
+    rationale: "Restarts and clock changes are used to erase or re-time evidence."
+    impact: "Very low log volume."
+    mitre_attack: ["T1070.006", "T1529"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Security State Change" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Security State Change
+      command: |-
+        auditpol /set /subcategory:"Security State Change" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-017
+    cis_ref: "17.9.5"
+    title: "Ensure 'Audit Security System Extension' records successes"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records new services and security extensions loaded into the system."
+    rationale: "Malicious security packages and services are a common persistence route."
+    impact: "Very low log volume."
+    mitre_attack: ["T1547.005", "T1543.003"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"Security System Extension" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: Security System Extension
+      command: |-
+        auditpol /set /subcategory:"Security System Extension" /success:enable /failure:disable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-AUD-018
+    cis_ref: "17.9.6"
+    title: "Ensure 'Audit System Integrity' records successes and failures"
+    os: windows
+    category: "Advanced audit policy"
+    level: 1
+    severity: medium
+    description: "Records detected code-integrity and tampering problems."
+    rationale: "Failed integrity checks often mean a tampered file or driver."
+    impact: "Very low log volume."
+    mitre_attack: ["T1553", "T1014"]
+    audit:
+      type: auditpol
+      command: |-
+        (auditpol /get /subcategory:"System Integrity" /r | ConvertFrom-Csv).'Inclusion Setting'
+      expected: "Success and Failure"
+      match: equals
+    remediation:
+      backup:
+        - type: auditpol
+          name: System Integrity
+      command: |-
+        auditpol /set /subcategory:"System Integrity" /success:enable /failure:enable
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

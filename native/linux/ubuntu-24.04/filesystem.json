@@ -1,0 +1,67 @@
+{
+  "version": "1",
+  "benchmark_id": "ubuntu-24.04-native-filesystem",
+  "ruleset_version": "1",
+  "rules": [
+    {
+      "id": "LNX-FS-001",
+      "kind": "kernel_module",
+      "target": "cramfs",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-002",
+      "kind": "kernel_module",
+      "target": "freevxfs",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-003",
+      "kind": "kernel_module",
+      "target": "jffs2",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-004",
+      "kind": "kernel_module",
+      "target": "hfs",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-005",
+      "kind": "kernel_module",
+      "target": "hfsplus",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-006",
+      "kind": "mount_options",
+      "target": "/var/tmp",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-FS-007",
+      "kind": "kernel_module",
+      "target": "udf",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-FS-008",
+      "kind": "kernel_module",
+      "target": "usb-storage",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-FS-009",
+      "kind": "mount_options",
+      "target": "/tmp",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-FS-010",
+      "kind": "mount_options",
+      "target": "/dev/shm",
+      "severity": "medium"
+    }
+  ]
+}
