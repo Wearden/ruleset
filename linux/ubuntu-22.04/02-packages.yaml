@@ -1,0 +1,148 @@
+controls:
+  - id: LNX-PKG-001
+    cis_ref: "1.9"
+    title: "Ensure automatic security updates are installed"
+    os: linux
+    category: "Package and update configuration"
+    level: 1
+    severity: high
+    description: "Installs the unattended-upgrades package so security patches are applied without waiting for an operator."
+    rationale: "Unpatched known vulnerabilities are the most common route into servers."
+    impact: "Automatic updates can restart services or, rarely, change behaviour. Review the unattended-upgrades settings."
+    mitre_attack: ["T1210", "T1190"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' unattended-upgrades 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W unattended-upgrades"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y unattended-upgrades
+    rollback:
+      strategy: command
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get remove -y unattended-upgrades
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PKG-002
+    cis_ref: "1.3.1"
+    title: "Ensure AIDE file integrity monitoring is installed"
+    os: linux
+    category: "Package and update configuration"
+    level: 1
+    severity: medium
+    description: "Installs AIDE, which records file hashes so that unexpected changes to system files can be detected."
+    rationale: "Without integrity checks, tampering with binaries and configuration can go unnoticed."
+    impact: "Adds a daily or weekly scan load and needs its database initialised."
+    mitre_attack: ["T1562.001", "T1036"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' aide 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W aide"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y aide
+    rollback:
+      strategy: command
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get remove -y aide
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PKG-003
+    cis_ref: "5.3.7"
+    title: "Ensure sudo is installed"
+    os: linux
+    category: "Package and update configuration"
+    level: 1
+    severity: medium
+    description: "Installs sudo so privileged actions are granted per user and logged, not by sharing the root password."
+    rationale: "Central privilege elevation with logging supports accountability."
+    impact: "None on a normal server. Some minimal images need the package added."
+    mitre_attack: ["T1548.003"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' sudo 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W sudo"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y sudo
+    rollback:
+      strategy: command
+      command: |-
+        echo "sudo is left installed on rollback to avoid lock-out"
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PKG-004
+    cis_ref: "1.2.1.2"
+    title: "Ensure package repositories use HTTPS, not plain HTTP"
+    os: linux
+    category: "Package and update configuration"
+    level: 1
+    severity: high
+    description: "Checks that apt sources do not fetch packages over unencrypted HTTP."
+    rationale: "Plain HTTP repositories allow an attacker on the path to swap packages."
+    impact: "Mirrors that only offer HTTP will stop working until switched to HTTPS."
+    mitre_attack: ["T1195.002", "T1557"]
+    audit:
+      type: command
+      command: |-
+        grep -rhs 'http://' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null | grep -vc '^#' || true
+      expected: "0"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/apt/sources.list
+        - type: file
+          path: /etc/apt/sources.list.d
+      command: |-
+        find /etc/apt/sources.list /etc/apt/sources.list.d -type f \( -name '*.list' -o -name '*.sources' -o -name 'sources.list' \) -print0 2>/dev/null | xargs -0 -r sed -i 's#http://#https://#g'
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-PKG-005
+    cis_ref: "1.2.1.1"
+    title: "Ensure apt does not accept unauthenticated packages"
+    os: linux
+    category: "Package and update configuration"
+    level: 1
+    severity: high
+    description: "Checks that no apt configuration allows installing packages whose signature cannot be verified."
+    rationale: "Accepting unsigned packages lets an attacker supply malicious software."
+    impact: "Repositories with broken signatures will refuse to install until fixed."
+    mitre_attack: ["T1195.002"]
+    audit:
+      type: command
+      command: |-
+        grep -rhs 'AllowUnauthenticated' /etc/apt/apt.conf.d/ 2>/dev/null | grep -vc '^//' || true
+      expected: "0"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/apt/apt.conf.d
+      command: |-
+        sed -i '/AllowUnauthenticated/d' /etc/apt/apt.conf.d/* 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

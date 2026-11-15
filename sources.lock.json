@@ -1,0 +1,546 @@
+{
+  "schema_version": 1,
+  "retrieved_date": "2026-11-15",
+  "legacy": [
+    {
+      "path": "linux/ubuntu-22.04/01-filesystem.yaml",
+      "sha256": "665c82d22452e6c0ab6d5c87379e5183197c75e7629fbca602924a6490fe0347",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/02-packages.yaml",
+      "sha256": "bf6a86fb9cb36972eece671f956d53cc7a38ecbcc7b7e693df209d1ad2d491e3",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/03-services.yaml",
+      "sha256": "597530c88e5788fddd50f80d7ae99f797ee1ad318daf44e0ab9cb1f156625280",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/04-network-sysctl.yaml",
+      "sha256": "d255b0fb70754cce31bbfc87cc3d0eb2c33038464f0d14060cb599f3ca52f503",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/05-firewall.yaml",
+      "sha256": "bace57bccaae962f38ba46db0db919ba34b6eef0125bcb45427ba63c2f0f307e",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/06-auditd.yaml",
+      "sha256": "9b5125d5266a97e2f9ff2f9634d3f891c9bdd6a7ade5c40cb8d1cb2d1e7a2cdb",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/07-logging.yaml",
+      "sha256": "e946238abae0896f4bab9ef48b93c023fc5427f44633debf0bf5dce650fc5219",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/08-ssh.yaml",
+      "sha256": "2bc0462851d0b1b870bf529862326cd47d1725bc9d4e7b990c9b8f57dc622bd8",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/09-pam.yaml",
+      "sha256": "ff1c3296e91d325ca01bbfe17e355948ddde83e5eb89b86b1ce47d79eaee2847",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/10-users-permissions.yaml",
+      "sha256": "34ef6ba1c460d7863a6b7255a64600e064e2c7a95925b6a4a2ef47f5f30b3cef",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-22.04/benchmark.yaml",
+      "sha256": "7d19384f6357a69f77470e987fcef3267398445d47520a92b7392c8a2746485b",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/01-filesystem.yaml",
+      "sha256": "665c82d22452e6c0ab6d5c87379e5183197c75e7629fbca602924a6490fe0347",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/02-packages.yaml",
+      "sha256": "bf6a86fb9cb36972eece671f956d53cc7a38ecbcc7b7e693df209d1ad2d491e3",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/03-services.yaml",
+      "sha256": "597530c88e5788fddd50f80d7ae99f797ee1ad318daf44e0ab9cb1f156625280",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/04-network-sysctl.yaml",
+      "sha256": "d255b0fb70754cce31bbfc87cc3d0eb2c33038464f0d14060cb599f3ca52f503",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/05-firewall.yaml",
+      "sha256": "bace57bccaae962f38ba46db0db919ba34b6eef0125bcb45427ba63c2f0f307e",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/07-logging.yaml",
+      "sha256": "e946238abae0896f4bab9ef48b93c023fc5427f44633debf0bf5dce650fc5219",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/08-ssh.yaml",
+      "sha256": "2bc0462851d0b1b870bf529862326cd47d1725bc9d4e7b990c9b8f57dc622bd8",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/09-pam.yaml",
+      "sha256": "ff1c3296e91d325ca01bbfe17e355948ddde83e5eb89b86b1ce47d79eaee2847",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/10-users-permissions.yaml",
+      "sha256": "34ef6ba1c460d7863a6b7255a64600e064e2c7a95925b6a4a2ef47f5f30b3cef",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "linux/ubuntu-24.04/benchmark.yaml",
+      "sha256": "7ae837c862167b277cb6cea87cbf7cf92e67f8e0f8d4974e889fd01076a12ae2",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/01-password-lockout.yaml",
+      "sha256": "5948bb92a3be0594c3586d1c09398c690adc31a4874e10fc5344001970ae9f08",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/02-user-rights.yaml",
+      "sha256": "3216d59da91f5f058c1129b3ce789b07bbd0eac2cfca68cb0813cf030b8ad721",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/03-security-options.yaml",
+      "sha256": "c59f0951f273f4860f4fe84f261f44f631165b2e9dad679a84cf4712e36900b4",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/04-firewall.yaml",
+      "sha256": "b97e280cba32ebaf072ff31827eb48f49c3ddf1eef627c0a22880dd0b1cac26e",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/05-audit-policy.yaml",
+      "sha256": "e601f91b08047ca3ae022b881669c9469b8490632cf250377bb993791b6e41c3",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/06-services.yaml",
+      "sha256": "5e6cae3516b3d312d246168c7e0db9c6d1876f6f8689c36e63ff79d2742a67bd",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/07-smb-ntlm-lsa.yaml",
+      "sha256": "48941b60f01d537de04e0d0a14188aa82d8e81416f78d97bbc0524ce5ae1ad06",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/08-rdp.yaml",
+      "sha256": "32eb8022fd874bc31e74468048b947f85eed840ebc05b375c2b2d447e93c779a",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/09-defender-misc.yaml",
+      "sha256": "31ea0f3e59532d3f7c73d26f0a8ee8e1574a1b18c00c552f6ac91521e419b80d",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/server-2022/benchmark.yaml",
+      "sha256": "a6025ac3660fc44c1f8d34c026d3b23669ed04992006426156bb395ad789c304",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/01-password-lockout.yaml",
+      "sha256": "5948bb92a3be0594c3586d1c09398c690adc31a4874e10fc5344001970ae9f08",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/02-user-rights.yaml",
+      "sha256": "3216d59da91f5f058c1129b3ce789b07bbd0eac2cfca68cb0813cf030b8ad721",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/03-security-options.yaml",
+      "sha256": "84e4019784e3156da49ee112e825246cb2b491958eff4f8d30c8423446a83c22",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/04-firewall.yaml",
+      "sha256": "b97e280cba32ebaf072ff31827eb48f49c3ddf1eef627c0a22880dd0b1cac26e",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/05-audit-policy.yaml",
+      "sha256": "e601f91b08047ca3ae022b881669c9469b8490632cf250377bb993791b6e41c3",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/06-services.yaml",
+      "sha256": "5e6cae3516b3d312d246168c7e0db9c6d1876f6f8689c36e63ff79d2742a67bd",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/07-smb-ntlm-lsa.yaml",
+      "sha256": "c6dd62a739729e8dc7351033a6d7e3db18fdebe1dd7719fdfc340d744fe48ed6",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/08-rdp.yaml",
+      "sha256": "f3a66bfc1cf404880d1baf164520723e817d3c1d21387a761c97b117fe3f88c9",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/09-defender-misc.yaml",
+      "sha256": "8ef1634adc2a110bcad7a4eb1c66ba5ca0413132d12e9ae4e3878781ede48ca1",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-10/benchmark.yaml",
+      "sha256": "f1c5a8b37e1769138b959a5dd8812f80a9588576c295b10858f77e32d6c2115c",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/01-password-lockout.yaml",
+      "sha256": "5948bb92a3be0594c3586d1c09398c690adc31a4874e10fc5344001970ae9f08",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/02-user-rights.yaml",
+      "sha256": "3216d59da91f5f058c1129b3ce789b07bbd0eac2cfca68cb0813cf030b8ad721",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/03-security-options.yaml",
+      "sha256": "84e4019784e3156da49ee112e825246cb2b491958eff4f8d30c8423446a83c22",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/04-firewall.yaml",
+      "sha256": "b97e280cba32ebaf072ff31827eb48f49c3ddf1eef627c0a22880dd0b1cac26e",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/05-audit-policy.yaml",
+      "sha256": "e601f91b08047ca3ae022b881669c9469b8490632cf250377bb993791b6e41c3",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/06-services.yaml",
+      "sha256": "5e6cae3516b3d312d246168c7e0db9c6d1876f6f8689c36e63ff79d2742a67bd",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/07-smb-ntlm-lsa.yaml",
+      "sha256": "c6dd62a739729e8dc7351033a6d7e3db18fdebe1dd7719fdfc340d744fe48ed6",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/08-rdp.yaml",
+      "sha256": "f3a66bfc1cf404880d1baf164520723e817d3c1d21387a761c97b117fe3f88c9",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/09-defender-misc.yaml",
+      "sha256": "8ef1634adc2a110bcad7a4eb1c66ba5ca0413132d12e9ae4e3878781ede48ca1",
+      "status": "legacy-unverified"
+    },
+    {
+      "path": "windows/windows-11/benchmark.yaml",
+      "sha256": "4c49378d9f6689a3d34c1b959b524dde4d106925550c7457c2017dc9579ea69a",
+      "status": "legacy-unverified"
+    }
+  ],
+  "upstream": {
+    "repository": "https://github.com/ComplianceAsCode/content",
+    "commit": "033b1b8672802ffa6bd555c373e2c73c32d25f5d",
+    "license": "BSD-3-Clause",
+    "files": [
+      {
+        "source_path": "LICENSE",
+        "local_path": "upstream/complianceascode/LICENSE",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/LICENSE",
+        "sha256": "ade633d5db670a58ff5f735c3602caafc72657a516416969fff79ff8a0c10298",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled/rule.yml",
+        "sha256": "07842111b2c318eb4df1afa57f25390e2d1f8812b9c281c37b3bdb4abc8b6ad6",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled/rule.yml",
+        "sha256": "9a246db4deff96e375f2c28904b9d80f0980f9f9d2835a9cfd7a04b638f9b582",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled/rule.yml",
+        "sha256": "29b476063f9c92eea63a12bd3611a0a5c75aadb87275f475b1cd7dc8453a7c05",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled/rule.yml",
+        "sha256": "c88aba6d9e93cd08e36a19f6015ff9518dab78a809b14d4f071a491e4b9ac8ee",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled/rule.yml",
+        "sha256": "d6a0ef18eed4673687f724b5830c2ce889ac4edc5359478b17b17d589fd9437c",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled/rule.yml",
+        "sha256": "a163cb8dc5b284f2776ed9c0338a3d99c6bd89a5d1043bbb2368b344b4300491",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml",
+        "sha256": "3dc1f1c7ccf063c297be4b684299c0e3618d294a983ba72ba30978f1b659ae59",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev/rule.yml",
+        "sha256": "f3ef7982e5b146e1c3bb11c76b511a6a795955300e85da99729390b4e73f2a22",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec/rule.yml",
+        "sha256": "f6a640f105b5bd5ad9404645b7d3e6921857c9a9ecd808043ce4046a1b3c37f9",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid/rule.yml",
+        "sha256": "be7b04c26d018ec455228b6109347c33e07176d7d72838bfc66f10139c30a494",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev/rule.yml",
+        "sha256": "763b148e6fe55fc267b089fcf68aea0a02899a0a3612dca41651dd7a068d63b9",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec/rule.yml",
+        "sha256": "d8769d6b955af9e5fd5350666eff33ed3a99f4bf1e01a8377b9d75ea53004814",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid/rule.yml",
+        "sha256": "5a8f92ed8d9f2ca8f85ec109c3e507ef44a7c908410542c321d3bcecd4059af9",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev/rule.yml",
+        "sha256": "8eae595e45f92361b1a18e0af88d6ab7a5c20c4150a7b5c0f45a2064255ec3c0",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec/rule.yml",
+        "sha256": "043906104ec5feb782ce1f8b701bacaef9a398c2e3371242b9999a24782ee648",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid/rule.yml",
+        "local_path": "upstream/complianceascode/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid/rule.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid/rule.yml",
+        "sha256": "9e07dc988e7e79e8efe3a31b3a49f1d74e22d1a09eefc91a10edd7835d93f2e3",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "products/ubuntu2404/product.yml",
+        "local_path": "upstream/complianceascode/products/ubuntu2404/product.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/products/ubuntu2404/product.yml",
+        "sha256": "4da87e7c3d802e904a07d4145947ef1817bb0cde7253cd7637772917aaa5ac31",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "products/ubuntu2404/profiles/cis_level1_server.profile",
+        "local_path": "upstream/complianceascode/products/ubuntu2404/profiles/cis_level1_server.profile",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/products/ubuntu2404/profiles/cis_level1_server.profile",
+        "sha256": "6a1b5f6716824977077f652b338da8aa97638c7a0fedd347727da37ae087942e",
+        "distribution_status": "local-reference-only-license-review-pending"
+      },
+      {
+        "source_path": "shared/templates/kernel_module_disabled/bash.template",
+        "local_path": "upstream/complianceascode/shared/templates/kernel_module_disabled/bash.template",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/shared/templates/kernel_module_disabled/bash.template",
+        "sha256": "0353295f7996dca9bcf3dd4ea30bb377dd3eb5258050c14e9d8a49caecfc87a8",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "shared/templates/kernel_module_disabled/oval.template",
+        "local_path": "upstream/complianceascode/shared/templates/kernel_module_disabled/oval.template",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/shared/templates/kernel_module_disabled/oval.template",
+        "sha256": "6c15a30f8cfabd1a3d405ec7865f38fcbb1865dd8e0401631bf9c2108e93b02a",
+        "distribution_status": "upstream-license-and-notices-required"
+      },
+      {
+        "source_path": "shared/templates/kernel_module_disabled/template.yml",
+        "local_path": "upstream/complianceascode/shared/templates/kernel_module_disabled/template.yml",
+        "url": "https://raw.githubusercontent.com/ComplianceAsCode/content/033b1b8672802ffa6bd555c373e2c73c32d25f5d/shared/templates/kernel_module_disabled/template.yml",
+        "sha256": "56d306543bbc30660fd33f515ece67510bfbb495e186b74b8fde296d72ff0636",
+        "distribution_status": "upstream-license-and-notices-required"
+      }
+    ]
+  },
+  "mappings": [
+    {
+      "control_id": "LNX-FS-001",
+      "source_paths": [
+        "linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled/rule.yml"
+      ],
+      "relationship": "same-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "Legacy module audit is not equivalent to upstream Ubuntu blacklisting plus install-blocking semantics."
+    },
+    {
+      "control_id": "LNX-FS-002",
+      "source_paths": [
+        "linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled/rule.yml"
+      ],
+      "relationship": "same-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "Legacy module audit is not equivalent to upstream Ubuntu blacklisting plus install-blocking semantics."
+    },
+    {
+      "control_id": "LNX-FS-003",
+      "source_paths": [
+        "linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled/rule.yml"
+      ],
+      "relationship": "same-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "Legacy module audit is not equivalent to upstream Ubuntu blacklisting plus install-blocking semantics."
+    },
+    {
+      "control_id": "LNX-FS-004",
+      "source_paths": [
+        "linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled/rule.yml"
+      ],
+      "relationship": "same-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "Legacy module audit is not equivalent to upstream Ubuntu blacklisting plus install-blocking semantics."
+    },
+    {
+      "control_id": "LNX-FS-005",
+      "source_paths": [
+        "linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled/rule.yml"
+      ],
+      "relationship": "same-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "Legacy module audit is not equivalent to upstream Ubuntu blacklisting plus install-blocking semantics."
+    },
+    {
+      "control_id": "LNX-FS-007",
+      "source_paths": [
+        "linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled/rule.yml"
+      ],
+      "relationship": "same-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "Legacy module audit is not equivalent to upstream Ubuntu blacklisting plus install-blocking semantics."
+    },
+    {
+      "control_id": "LNX-FS-008",
+      "source_paths": [
+        "linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled/rule.yml"
+      ],
+      "relationship": "same-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "Legacy module audit is not equivalent to upstream Ubuntu blacklisting plus install-blocking semantics."
+    },
+    {
+      "control_id": "LNX-FS-006",
+      "source_paths": [
+        "linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev/rule.yml",
+        "linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid/rule.yml",
+        "linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec/rule.yml"
+      ],
+      "relationship": "combined-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "All three mount options must be evaluated together; applicability is pending native implementation."
+    },
+    {
+      "control_id": "LNX-FS-009",
+      "source_paths": [
+        "linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev/rule.yml",
+        "linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid/rule.yml",
+        "linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec/rule.yml"
+      ],
+      "relationship": "combined-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "All three mount options must be evaluated together; applicability is pending native implementation."
+    },
+    {
+      "control_id": "LNX-FS-010",
+      "source_paths": [
+        "linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev/rule.yml",
+        "linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid/rule.yml",
+        "linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec/rule.yml"
+      ],
+      "relationship": "combined-security-intent",
+      "status": "native-implementation-and-semantic-review-pending",
+      "semantic_note": "All three mount options must be evaluated together; applicability is pending native implementation."
+    }
+  ],
+  "windows_references": [
+    {
+      "target": "windows-10",
+      "baseline": "Windows 10 version 22H2 Security Baseline.zip",
+      "download_url": "https://download.microsoft.com/download/8/5/c/85c25433-a1b0-4ffa-9429-7e023e7da8d8/Windows%2010%20version%2022H2%20Security%20Baseline.zip",
+      "landing_page": "https://www.microsoft.com/en-us/download/details.aspx?id=55319",
+      "status": "reference-only-redistribution-review-pending",
+      "note": "Version-specific baseline; not a generic policy for every OS release."
+    },
+    {
+      "target": "windows-11",
+      "baseline": "Windows 11 v24H2 Security Baseline.zip",
+      "download_url": "https://download.microsoft.com/download/8/5/c/85c25433-a1b0-4ffa-9429-7e023e7da8d8/Windows%2011%20v24H2%20Security%20Baseline.zip",
+      "landing_page": "https://www.microsoft.com/en-us/download/details.aspx?id=55319",
+      "status": "reference-only-redistribution-review-pending",
+      "note": "Version-specific baseline; not a generic policy for every OS release."
+    },
+    {
+      "target": "server-2022",
+      "baseline": "Windows Server 2022 Security Baseline.zip",
+      "download_url": "https://download.microsoft.com/download/8/5/c/85c25433-a1b0-4ffa-9429-7e023e7da8d8/Windows%20Server%202022%20Security%20Baseline.zip",
+      "landing_page": "https://www.microsoft.com/en-us/download/details.aspx?id=55319",
+      "status": "reference-only-redistribution-review-pending",
+      "note": "Version-specific baseline; not a generic policy for every OS release."
+    }
+  ]
+}

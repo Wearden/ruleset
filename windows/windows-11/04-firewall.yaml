@@ -1,0 +1,252 @@
+controls:
+  - id: WIN-FW-001
+    cis_ref: "9.1.1"
+    title: "Ensure Windows Defender Firewall is on for the Domain profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: high
+    description: "Turns on the host firewall while the machine is on a domain network."
+    rationale: "A host firewall limits which services an attacker on the segment can reach."
+    impact: "Remote management ports are blocked unless allowed. The remediation enables the WinRM and RDP rules first."
+    mitre_attack: ["T1562.004", "T1046"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Domain).Enabled
+      expected: "True"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Domain
+      command: |-
+        Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management','Remote Desktop' -ErrorAction SilentlyContinue; Set-NetFirewallProfile -Name Domain -Enabled True
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-FW-002
+    cis_ref: "9.2.1"
+    title: "Ensure Windows Defender Firewall is on for the Private profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: high
+    description: "Turns on the host firewall on private networks."
+    rationale: "Private networks still contain other users' machines and malware."
+    impact: "Remote management ports are blocked unless allowed. The remediation enables the WinRM and RDP rules first."
+    mitre_attack: ["T1562.004", "T1046"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Private).Enabled
+      expected: "True"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Private
+      command: |-
+        Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management','Remote Desktop' -ErrorAction SilentlyContinue; Set-NetFirewallProfile -Name Private -Enabled True
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-FW-003
+    cis_ref: "9.3.1"
+    title: "Ensure Windows Defender Firewall is on for the Public profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: high
+    description: "Turns on the host firewall on public networks such as cafés and hotels."
+    rationale: "Public networks are the most hostile, so the firewall matters most there."
+    impact: "Remote management ports are blocked unless allowed. The remediation enables the WinRM and RDP rules first."
+    mitre_attack: ["T1562.004", "T1046"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Public).Enabled
+      expected: "True"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Public
+      command: |-
+        Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management','Remote Desktop' -ErrorAction SilentlyContinue; Set-NetFirewallProfile -Name Public -Enabled True
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-FW-004
+    cis_ref: "9.1.2"
+    title: "Ensure inbound connections are blocked by default on the Domain profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: high
+    description: "Drops inbound connections that have no allow rule, on domain networks."
+    rationale: "Default-deny means only deliberately published services are reachable."
+    impact: "Any inbound service without an allow rule stops. WinRM and RDP are allowed before this change is applied."
+    mitre_attack: ["T1562.004", "T1021"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Domain).DefaultInboundAction
+      expected: "Block"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Domain
+      command: |-
+        Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management','Remote Desktop' -ErrorAction SilentlyContinue; Set-NetFirewallProfile -Name Domain -DefaultInboundAction Block
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-FW-005
+    cis_ref: "9.2.2"
+    title: "Ensure inbound connections are blocked by default on the Private profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: high
+    description: "Drops inbound connections that have no allow rule, on private networks."
+    rationale: "Default-deny keeps unplanned services off the network."
+    impact: "Any inbound service without an allow rule stops."
+    mitre_attack: ["T1562.004", "T1021"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Private).DefaultInboundAction
+      expected: "Block"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Private
+      command: |-
+        Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management','Remote Desktop' -ErrorAction SilentlyContinue; Set-NetFirewallProfile -Name Private -DefaultInboundAction Block
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-FW-006
+    cis_ref: "9.3.2"
+    title: "Ensure inbound connections are blocked by default on the Public profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: high
+    description: "Drops inbound connections that have no allow rule, on public networks."
+    rationale: "Public networks are the most hostile, so default-deny matters most there."
+    impact: "Any inbound service without an allow rule stops."
+    mitre_attack: ["T1562.004", "T1021"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Public).DefaultInboundAction
+      expected: "Block"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Public
+      command: |-
+        Enable-NetFirewallRule -DisplayGroup 'Windows Remote Management','Remote Desktop' -ErrorAction SilentlyContinue; Set-NetFirewallProfile -Name Public -DefaultInboundAction Block
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-FW-007
+    cis_ref: "9.1.6"
+    title: "Ensure dropped packets are logged on the Domain profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: medium
+    description: "Writes blocked inbound connections to the firewall log on domain networks."
+    rationale: "Blocked connection logs reveal scanning and attack attempts."
+    impact: "Log file grows with blocked traffic."
+    mitre_attack: ["T1562.002", "T1595"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Domain).LogBlocked
+      expected: "True"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Domain
+      command: |-
+        Set-NetFirewallProfile -Name Domain -LogBlocked True
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-FW-008
+    cis_ref: "9.3.6"
+    title: "Ensure dropped packets are logged on the Public profile"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: medium
+    description: "Writes blocked inbound connections to the firewall log on public networks."
+    rationale: "Public-network scanning is the first sign of an attack on a laptop."
+    impact: "Log file grows with blocked traffic."
+    mitre_attack: ["T1562.002", "T1595"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Public).LogBlocked
+      expected: "True"
+      match: equals
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Public
+      command: |-
+        Set-NetFirewallProfile -Name Public -LogBlocked True
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-FW-009
+    cis_ref: "9.3.3"
+    title: "Ensure the Public firewall log is at least 16 MB"
+    os: windows
+    category: "Windows Defender Firewall"
+    level: 1
+    severity: low
+    description: "Makes the public-profile firewall log large enough to keep useful history."
+    rationale: "A tiny log rotates away the evidence of an attack within minutes."
+    impact: "Uses up to 16 MB of disk for the firewall log."
+    mitre_attack: ["T1070"]
+    audit:
+      type: command
+      command: |-
+        (Get-NetFirewallProfile -Name Public).LogMaxSizeKilobytes
+      expected: "16384"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: netfirewall
+          name: Public
+      command: |-
+        Set-NetFirewallProfile -Name Public -LogMaxSizeKilobytes 16384
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

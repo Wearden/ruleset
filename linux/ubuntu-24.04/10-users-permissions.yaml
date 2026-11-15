@@ -1,0 +1,346 @@
+controls:
+  - id: LNX-USR-001
+    cis_ref: "6.1.2"
+    title: "Ensure permissions on /etc/passwd are 644 and owned by root"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: high
+    description: "Makes the account list readable by all and writable only by root."
+    rationale: "Write access to the account file lets an attacker add a root account."
+    impact: "None for normal use."
+    mitre_attack: ["T1098", "T1136.001"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a %U %G' /etc/passwd
+      expected: "644 root root"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/passwd
+      command: |-
+        chown root:root /etc/passwd && chmod 644 /etc/passwd
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-002
+    cis_ref: "6.1.3"
+    title: "Ensure permissions on /etc/shadow are 640 and owned by root"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: critical
+    description: "Restricts the password hash file to root and the shadow group."
+    rationale: "Anyone who can read the hashes can run offline password cracking."
+    impact: "Only root and the shadow group can read password hashes."
+    mitre_attack: ["T1003.008"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a %U %G' /etc/shadow
+      expected: "640 root shadow"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/shadow
+      command: |-
+        chown root:shadow /etc/shadow && chmod 640 /etc/shadow
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-003
+    cis_ref: "6.1.4"
+    title: "Ensure permissions on /etc/group are 644 and owned by root"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: high
+    description: "Makes the group list readable by all and writable only by root."
+    rationale: "Write access to the group file lets an attacker add themselves to privileged groups."
+    impact: "None for normal use."
+    mitre_attack: ["T1098"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a %U %G' /etc/group
+      expected: "644 root root"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/group
+      command: |-
+        chown root:root /etc/group && chmod 644 /etc/group
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-004
+    cis_ref: "6.1.5"
+    title: "Ensure permissions on /etc/gshadow are 640 and owned by root"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: critical
+    description: "Restricts the group password file to root and the shadow group."
+    rationale: "Group password hashes can be cracked offline if readable."
+    impact: "None for normal use."
+    mitre_attack: ["T1003.008"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a %U %G' /etc/gshadow
+      expected: "640 root shadow"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/gshadow
+      command: |-
+        chown root:shadow /etc/gshadow && chmod 640 /etc/gshadow
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-005
+    cis_ref: "6.2.5"
+    title: "Ensure root is the only account with UID 0"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: critical
+    description: "Checks that no other account has root privileges by UID."
+    rationale: "A second UID 0 account is a hidden administrator and a common backdoor."
+    impact: "Automatic fix is not applied. Review the account list and remove or re-number any extra UID 0 account by hand."
+    mitre_attack: ["T1136.001", "T1078.003"]
+    audit:
+      type: command
+      command: |-
+        awk -F: '($3==0){print $1}' /etc/passwd | paste -sd, -
+      expected: "root"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/passwd
+      command: |-
+        echo "Manual action required: remove or renumber the extra UID 0 accounts listed by the audit. Not changed automatically." >&2; exit 1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: LNX-USR-006
+    cis_ref: "6.2.6"
+    title: "Ensure no legacy '+' entries exist in passwd, shadow or group"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: high
+    description: "Removes old NIS-style '+' lines that import entries from external sources."
+    rationale: "A '+' line can silently grant accounts that nobody audits."
+    impact: "Accounts provided by an old NIS setup stop resolving."
+    mitre_attack: ["T1078"]
+    audit:
+      type: command
+      command: |-
+        cat /etc/passwd /etc/shadow /etc/group 2>/dev/null | grep -c '^+:' || true
+      expected: "0"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/passwd
+        - type: file
+          path: /etc/shadow
+        - type: file
+          path: /etc/group
+      command: |-
+        sed -i '/^+:/d' /etc/passwd /etc/shadow /etc/group
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-007
+    cis_ref: "6.1.10"
+    title: "Ensure no world-writable files exist on local filesystems"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: high
+    description: "Finds files that every user can write to and removes the write permission for others."
+    rationale: "Anyone can change a world-writable file, including one that root runs."
+    impact: "Programs that expect others to write to a file will fail. Review the list written to the backup path first."
+    mitre_attack: ["T1222", "T1574"]
+    audit:
+      type: command
+      command: |-
+        find / -xdev -type f -perm -0002 2>/dev/null | wc -l
+      expected: "0"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /var/lib/hardenops/world-writable-before.txt
+      command: |-
+        mkdir -p /var/lib/hardenops && find / -xdev -type f -perm -0002 2>/dev/null > /var/lib/hardenops/world-writable-before.txt; find / -xdev -type f -perm -0002 -exec chmod o-w {} + 2>/dev/null; true
+    rollback:
+      strategy: command
+      command: |-
+        xargs -a /var/lib/hardenops/world-writable-before.txt -d '\n' -r chmod o+w 2>/dev/null; true
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-008
+    cis_ref: "6.1.11"
+    title: "Ensure world-writable directories have the sticky bit set"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: medium
+    description: "Sets the sticky bit on shared writable directories so users can only delete their own files."
+    rationale: "Without the sticky bit, one user can delete or replace another user's files in a shared folder."
+    impact: "None for normal use."
+    mitre_attack: ["T1222"]
+    audit:
+      type: command
+      command: |-
+        find / -xdev -type d -perm -0002 ! -perm -1000 2>/dev/null | wc -l
+      expected: "0"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /var/lib/hardenops/sticky-before.txt
+      command: |-
+        mkdir -p /var/lib/hardenops && find / -xdev -type d -perm -0002 ! -perm -1000 2>/dev/null > /var/lib/hardenops/sticky-before.txt; find / -xdev -type d -perm -0002 ! -perm -1000 -exec chmod a+t {} + 2>/dev/null; true
+    rollback:
+      strategy: command
+      command: |-
+        xargs -a /var/lib/hardenops/sticky-before.txt -d '\n' -r chmod -t 2>/dev/null; true
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-009
+    cis_ref: "6.1.12"
+    title: "Ensure no files or directories without an owner or group exist"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: medium
+    description: "Finds files whose owner or group no longer exists in the account database."
+    rationale: "Orphaned files can be claimed by a new account that reuses the old UID."
+    impact: "Remediation assigns orphaned files to root. Review the list first if files belong to removed service accounts."
+    mitre_attack: ["T1078"]
+    audit:
+      type: command
+      command: |-
+        find / -xdev \( -nouser -o -nogroup \) 2>/dev/null | wc -l
+      expected: "0"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /var/lib/hardenops/orphans-before.txt
+      command: |-
+        mkdir -p /var/lib/hardenops && find / -xdev \( -nouser -o -nogroup \) 2>/dev/null > /var/lib/hardenops/orphans-before.txt; find / -xdev -nouser -exec chown root {} + 2>/dev/null; find / -xdev -nogroup -exec chgrp root {} + 2>/dev/null; true
+    rollback:
+      strategy: command
+      command: |-
+        echo 'original owners of orphaned files cannot be restored automatically; the list is in /var/lib/hardenops/orphans-before.txt' >&2; exit 1
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-010
+    cis_ref: "6.2.8"
+    title: "Ensure the root home directory is private (700 or 750)"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: medium
+    description: "Restricts the root home directory so other users cannot read its contents."
+    rationale: "Root's home often holds credentials and shell history."
+    impact: "None for normal administration."
+    mitre_attack: ["T1552.003"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a' /root 2>/dev/null || echo missing
+      expected: "^(700|750)$"
+      match: regex
+    remediation:
+      backup:
+        - type: file
+          path: /root
+      command: |-
+        chmod 700 /root
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-011
+    cis_ref: "5.1.2"
+    title: "Ensure permissions on /etc/crontab are 600 and owned by root"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: medium
+    description: "Restricts the system crontab so only root can change scheduled jobs."
+    rationale: "A writable crontab lets any user schedule code that runs as root."
+    impact: "None for normal use."
+    mitre_attack: ["T1053.003"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a %U %G' /etc/crontab
+      expected: "600 root root"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/crontab
+      command: |-
+        chown root:root /etc/crontab && chmod 600 /etc/crontab
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-USR-012
+    cis_ref: "5.3.4"
+    title: "Ensure permissions on /etc/sudoers are 440 and owned by root"
+    os: linux
+    category: "User and group files and permissions"
+    level: 1
+    severity: high
+    description: "Restricts the sudo policy file to read-only for root."
+    rationale: "A writable sudoers file grants any user unrestricted root."
+    impact: "Editing sudoers requires visudo as root."
+    mitre_attack: ["T1548.003"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a %U %G' /etc/sudoers
+      expected: "440 root root"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sudoers
+      command: |-
+        chown root:root /etc/sudoers && chmod 440 /etc/sudoers
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

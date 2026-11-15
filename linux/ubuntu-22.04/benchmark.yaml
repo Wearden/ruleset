@@ -1,0 +1,35 @@
+id: ubuntu-22.04-cis
+os: linux
+name: "CIS Ubuntu Linux 22.04 LTS (Level 1, curated Top 100)"
+version: "0.1-draft"
+# cis_ref values are mapped from the CIS Ubuntu 22.04 benchmark and MUST be verified against the licensed PDF
+# before publication. Descriptions and rationale are written in our own words.
+profiles:
+  - id: full-top-100
+    name: "Full Top 100"
+    description: "All 100 Level 1 controls."
+    controls: all
+  - id: quick-20
+    name: "Quick 20"
+    description: "20 low-risk, high-impact controls that run fast."
+    control_ids:
+      - LNX-FS-001
+      - LNX-PKG-001
+      - LNX-SVC-001
+      - LNX-NET-001
+      - LNX-NET-002
+      - LNX-NET-004
+      - LNX-NET-012
+      - LNX-FW-001
+      - LNX-FW-002
+      - LNX-FW-004
+      - LNX-AUD-001
+      - LNX-AUD-003
+      - LNX-LOG-001
+      - LNX-SSH-001
+      - LNX-SSH-003
+      - LNX-SSH-004
+      - LNX-SSH-008
+      - LNX-PAM-002
+      - LNX-USR-001
+      - LNX-USR-005

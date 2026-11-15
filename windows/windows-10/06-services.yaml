@@ -1,0 +1,168 @@
+controls:
+  - id: WIN-SVC-001
+    cis_ref: "5.1"
+    title: "Ensure Print Spooler is disabled on servers that do not print"
+    os: windows
+    category: "Services"
+    level: 1
+    severity: high
+    description: "Turns off the print spooler service on machines that are not print servers."
+    rationale: "The spooler has had repeated remote code execution flaws that are reachable without logon."
+    impact: "Printing from this machine stops."
+    mitre_attack: ["T1068", "T1210"]
+    audit:
+      type: service
+      command: |-
+        $s = Get-Service -Name Spooler -ErrorAction SilentlyContinue; if ($s) { $s.StartType } else { 'Disabled' }
+      expected: "Disabled"
+      match: equals
+    remediation:
+      backup:
+        - type: service
+          name: Spooler
+      command: |-
+        Stop-Service -Name Spooler -Force -ErrorAction SilentlyContinue; Set-Service -Name Spooler -StartupType Disabled
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SVC-002
+    cis_ref: "5.2"
+    title: "Ensure Remote Registry service is disabled"
+    os: windows
+    category: "Services"
+    level: 1
+    severity: high
+    description: "Turns off the service that lets remote users read and edit the registry."
+    rationale: "Remote registry access gives attackers configuration and credential reach."
+    impact: "Remote registry tools stop working. Normal management through WinRM is not affected."
+    mitre_attack: ["T1112", "T1021"]
+    audit:
+      type: service
+      command: |-
+        $s = Get-Service -Name RemoteRegistry -ErrorAction SilentlyContinue; if ($s) { $s.StartType } else { 'Disabled' }
+      expected: "Disabled"
+      match: equals
+    remediation:
+      backup:
+        - type: service
+          name: RemoteRegistry
+      command: |-
+        Stop-Service -Name RemoteRegistry -Force -ErrorAction SilentlyContinue; Set-Service -Name RemoteRegistry -StartupType Disabled
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SVC-003
+    cis_ref: "5.3"
+    title: "Ensure Telnet service is disabled or not installed"
+    os: windows
+    category: "Services"
+    level: 1
+    severity: high
+    description: "Turns off the Telnet server, which sends logins in clear text."
+    rationale: "Telnet exposes passwords to anyone on the network path."
+    impact: "Telnet logins stop. Use SSH or WinRM."
+    mitre_attack: ["T1021", "T1040"]
+    audit:
+      type: service
+      command: |-
+        $s = Get-Service -Name TlntSvr -ErrorAction SilentlyContinue; if ($s) { $s.StartType } else { 'Disabled' }
+      expected: "Disabled"
+      match: equals
+    remediation:
+      backup:
+        - type: service
+          name: TlntSvr
+      command: |-
+        Stop-Service -Name TlntSvr -Force -ErrorAction SilentlyContinue; Set-Service -Name TlntSvr -StartupType Disabled
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SVC-004
+    cis_ref: "5.4"
+    title: "Ensure SNMP service is disabled unless monitoring requires it"
+    os: windows
+    category: "Services"
+    level: 1
+    severity: medium
+    description: "Turns off the SNMP agent."
+    rationale: "SNMP v1 and v2 expose system detail and use community strings sent in clear text."
+    impact: "Monitoring tools that poll this machine over SNMP lose data."
+    mitre_attack: ["T1602", "T1046"]
+    audit:
+      type: service
+      command: |-
+        $s = Get-Service -Name SNMP -ErrorAction SilentlyContinue; if ($s) { $s.StartType } else { 'Disabled' }
+      expected: "Disabled"
+      match: equals
+    remediation:
+      backup:
+        - type: service
+          name: SNMP
+      command: |-
+        Stop-Service -Name SNMP -Force -ErrorAction SilentlyContinue; Set-Service -Name SNMP -StartupType Disabled
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SVC-005
+    cis_ref: "5.5"
+    title: "Ensure Fax service is disabled"
+    os: windows
+    category: "Services"
+    level: 1
+    severity: low
+    description: "Turns off the fax service, which is rarely needed on servers."
+    rationale: "Unused services are attack surface and should not run."
+    impact: "Fax sending and receiving stop."
+    mitre_attack: ["T1210"]
+    audit:
+      type: service
+      command: |-
+        $s = Get-Service -Name Fax -ErrorAction SilentlyContinue; if ($s) { $s.StartType } else { 'Disabled' }
+      expected: "Disabled"
+      match: equals
+    remediation:
+      backup:
+        - type: service
+          name: Fax
+      command: |-
+        Stop-Service -Name Fax -Force -ErrorAction SilentlyContinue; Set-Service -Name Fax -StartupType Disabled
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SVC-006
+    cis_ref: "5.6"
+    title: "Ensure Simple TCP/IP Services (echo, daytime, chargen) is disabled"
+    os: windows
+    category: "Services"
+    level: 1
+    severity: medium
+    description: "Turns off the legacy diagnostic services that answer on fixed TCP ports."
+    rationale: "These services are used for reflection and amplification attacks and reveal system details."
+    impact: "Legacy diagnostic clients stop working."
+    mitre_attack: ["T1498", "T1046"]
+    audit:
+      type: service
+      command: |-
+        $s = Get-Service -Name simptcp -ErrorAction SilentlyContinue; if ($s) { $s.StartType } else { 'Disabled' }
+      expected: "Disabled"
+      match: equals
+    remediation:
+      backup:
+        - type: service
+          name: simptcp
+      command: |-
+        Stop-Service -Name simptcp -Force -ErrorAction SilentlyContinue; Set-Service -Name simptcp -StartupType Disabled
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

@@ -1,0 +1,280 @@
+controls:
+  - id: LNX-FS-001
+    cis_ref: "1.1.1.1"
+    title: "Ensure cramfs kernel module is disabled"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: low
+    description: "Blocks loading of the cramfs filesystem driver, which the system does not need."
+    rationale: "Unused kernel filesystem code is attack surface that an unprivileged user can reach."
+    impact: "Mounting cramfs images fails. Standard servers do not use cramfs."
+    mitre_attack: ["T1547.006"]
+    audit:
+      type: command
+      command: |-
+        modprobe -n -v cramfs 2>&1 | grep -c 'install /bin/true'
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/modprobe.d/hardenops-cramfs.conf
+      command: |-
+        printf 'install cramfs /bin/true\n' > /etc/modprobe.d/hardenops-cramfs.conf && (rmmod cramfs 2>/dev/null || true)
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-002
+    cis_ref: "1.1.1.2"
+    title: "Ensure freevxfs kernel module is disabled"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: low
+    description: "Blocks loading of the freevxfs driver, which the system does not use."
+    rationale: "Unused kernel filesystem code is attack surface."
+    impact: "Mounting Veritas VxFS volumes fails. Standard servers do not use them."
+    mitre_attack: ["T1547.006"]
+    audit:
+      type: command
+      command: |-
+        modprobe -n -v freevxfs 2>&1 | grep -c 'install /bin/true'
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/modprobe.d/hardenops-freevxfs.conf
+      command: |-
+        printf 'install freevxfs /bin/true\n' > /etc/modprobe.d/hardenops-freevxfs.conf && (rmmod freevxfs 2>/dev/null || true)
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-003
+    cis_ref: "1.1.1.3"
+    title: "Ensure jffs2 kernel module is disabled"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: low
+    description: "Blocks loading of the jffs2 flash filesystem driver."
+    rationale: "Unused kernel filesystem code is attack surface."
+    impact: "Mounting JFFS2 flash images fails. Servers do not normally use them."
+    mitre_attack: ["T1547.006"]
+    audit:
+      type: command
+      command: |-
+        modprobe -n -v jffs2 2>&1 | grep -c 'install /bin/true'
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/modprobe.d/hardenops-jffs2.conf
+      command: |-
+        printf 'install jffs2 /bin/true\n' > /etc/modprobe.d/hardenops-jffs2.conf && (rmmod jffs2 2>/dev/null || true)
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-004
+    cis_ref: "1.1.1.4"
+    title: "Ensure hfs kernel module is disabled"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: low
+    description: "Blocks loading of the legacy Apple HFS driver."
+    rationale: "Unused kernel filesystem code is attack surface."
+    impact: "Mounting HFS volumes fails. Servers do not normally use them."
+    mitre_attack: ["T1547.006"]
+    audit:
+      type: command
+      command: |-
+        modprobe -n -v hfs 2>&1 | grep -c 'install /bin/true'
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/modprobe.d/hardenops-hfs.conf
+      command: |-
+        printf 'install hfs /bin/true\n' > /etc/modprobe.d/hardenops-hfs.conf && (rmmod hfs 2>/dev/null || true)
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-005
+    cis_ref: "1.1.1.5"
+    title: "Ensure hfsplus kernel module is disabled"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: low
+    description: "Blocks loading of the HFS+ driver."
+    rationale: "Unused kernel filesystem code is attack surface."
+    impact: "Mounting HFS+ volumes fails. Servers do not normally use them."
+    mitre_attack: ["T1547.006"]
+    audit:
+      type: command
+      command: |-
+        modprobe -n -v hfsplus 2>&1 | grep -c 'install /bin/true'
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/modprobe.d/hardenops-hfsplus.conf
+      command: |-
+        printf 'install hfsplus /bin/true\n' > /etc/modprobe.d/hardenops-hfsplus.conf && (rmmod hfsplus 2>/dev/null || true)
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-006
+    cis_ref: "1.1.4"
+    title: "Ensure nodev, nosuid and noexec are set on /var/tmp"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: medium
+    description: "Mounts /var/tmp so that device files, setuid binaries and executables cannot run from it."
+    rationale: "Attackers often stage payloads in temporary directories. These flags block the common tricks."
+    impact: "Scripts or installers that run from /var/tmp will stop working. /var/tmp must be a separate mount, or the change is only applied at runtime."
+    mitre_attack: ["T1564", "T1204"]
+    audit:
+      type: command
+      command: |-
+        o=$(findmnt -kn -o OPTIONS /var/tmp 2>/dev/null); for x in nodev nosuid noexec; do case ",$o," in *,$x,*) ;; *) echo missing-$x; exit 0;; esac; done; echo ok
+      expected: "ok"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/fstab
+      command: |-
+        sed -i -E '\#[[:space:]]/var/tmp[[:space:]]#s/defaults/defaults,nodev,nosuid,noexec/' /etc/fstab && mount -o remount,nodev,nosuid,noexec /var/tmp
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-007
+    cis_ref: "1.1.1.7"
+    title: "Ensure udf kernel module is disabled"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: low
+    description: "Blocks loading of the UDF optical filesystem driver."
+    rationale: "Unused kernel filesystem code is attack surface."
+    impact: "Mounting UDF media such as some DVD images fails."
+    mitre_attack: ["T1547.006"]
+    audit:
+      type: command
+      command: |-
+        modprobe -n -v udf 2>&1 | grep -c 'install /bin/true'
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/modprobe.d/hardenops-udf.conf
+      command: |-
+        printf 'install udf /bin/true\n' > /etc/modprobe.d/hardenops-udf.conf && (rmmod udf 2>/dev/null || true)
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-008
+    cis_ref: "1.1.1.8"
+    title: "Ensure usb-storage kernel module is disabled"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: medium
+    description: "Blocks the USB mass-storage driver so that removable drives cannot be mounted."
+    rationale: "Removable media is a common route for malware and data theft."
+    impact: "USB flash drives and external disks stop working. USB keyboards and mice are not affected."
+    mitre_attack: ["T1200", "T1052.001"]
+    audit:
+      type: command
+      command: |-
+        modprobe -n -v usb-storage 2>&1 | grep -c 'install /bin/true'
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/modprobe.d/hardenops-usb-storage.conf
+      command: |-
+        printf 'install usb-storage /bin/true\n' > /etc/modprobe.d/hardenops-usb-storage.conf && (rmmod usb-storage 2>/dev/null || true)
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-009
+    cis_ref: "1.1.2.1"
+    title: "Ensure nodev, nosuid and noexec are set on /tmp"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: medium
+    description: "Mounts /tmp so that device files, setuid binaries and executables cannot run from it."
+    rationale: "/tmp is world-writable, so it is the most common place for staged attack payloads."
+    impact: "Programs that execute code from /tmp will fail. /tmp must be a separate mount, or the change lasts only until reboot."
+    mitre_attack: ["T1564", "T1204"]
+    audit:
+      type: command
+      command: |-
+        o=$(findmnt -kn -o OPTIONS /tmp 2>/dev/null); for x in nodev nosuid noexec; do case ",$o," in *,$x,*) ;; *) echo missing-$x; exit 0;; esac; done; echo ok
+      expected: "ok"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/fstab
+      command: |-
+        sed -i -E '\#[[:space:]]/tmp[[:space:]]#s/defaults/defaults,nodev,nosuid,noexec/' /etc/fstab && mount -o remount,nodev,nosuid,noexec /tmp
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-FS-010
+    cis_ref: "1.1.7"
+    title: "Ensure nodev, nosuid and noexec are set on /dev/shm"
+    os: linux
+    category: "Filesystem and mount options"
+    level: 1
+    severity: medium
+    description: "Mounts the shared-memory filesystem so that it cannot hold device files, setuid binaries or executables."
+    rationale: "Shared memory is writable by everyone and is a common staging area."
+    impact: "Software that maps executable code from shared memory will stop working. Rare on servers."
+    mitre_attack: ["T1564"]
+    audit:
+      type: command
+      command: |-
+        o=$(findmnt -kn -o OPTIONS /dev/shm 2>/dev/null); for x in nodev nosuid noexec; do case ",$o," in *,$x,*) ;; *) echo missing-$x; exit 0;; esac; done; echo ok
+      expected: "ok"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/fstab
+      command: |-
+        sed -i -E '\#[[:space:]]/dev/shm[[:space:]]#s/defaults/defaults,nodev,nosuid,noexec/' /etc/fstab && mount -o remount,nodev,nosuid,noexec /dev/shm
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

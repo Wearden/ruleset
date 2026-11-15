@@ -1,0 +1,336 @@
+controls:
+  - id: WIN-URA-001
+    cis_ref: "2.2.20"
+    title: "Ensure 'Deny access to this computer from the network' includes Guests"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: medium
+    description: "Stops guest accounts from connecting to this machine over the network."
+    rationale: "Guest network access gives unidentified attackers a route in."
+    impact: "Guests cannot use network shares on this machine."
+    mitre_attack: ["T1078.001", "T1021.002"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeDenyNetworkLogonRight\s*=[^\r\n]*').Value
+      expected: "*S-1-5-32-546"
+      match: contains
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeDenyNetworkLogonRight\s*=[^\r\n]*', 'SeDenyNetworkLogonRight = *S-1-5-32-546'); if ($c -notmatch '(?m)^SeDenyNetworkLogonRight') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeDenyNetworkLogonRight = *S-1-5-32-546" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-002
+    cis_ref: "2.2.21"
+    title: "Ensure 'Deny log on through Remote Desktop Services' includes Guests"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: medium
+    description: "Stops guest accounts from signing in over Remote Desktop."
+    rationale: "Guest remote sessions are an unnecessary way in."
+    impact: "Guests cannot use Remote Desktop."
+    mitre_attack: ["T1021.001", "T1078.001"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeDenyRemoteInteractiveLogonRight\s*=[^\r\n]*').Value
+      expected: "*S-1-5-32-546"
+      match: contains
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeDenyRemoteInteractiveLogonRight\s*=[^\r\n]*', 'SeDenyRemoteInteractiveLogonRight = *S-1-5-32-546'); if ($c -notmatch '(?m)^SeDenyRemoteInteractiveLogonRight') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeDenyRemoteInteractiveLogonRight = *S-1-5-32-546" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-003
+    cis_ref: "2.2.7"
+    title: "Ensure 'Debug programs' is limited to Administrators"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: critical
+    description: "Allows only administrators to attach debuggers to other processes."
+    rationale: "Debug rights let a user read or modify the memory of any process, including security tools."
+    impact: "Developers who debug other users' processes need an administrator."
+    mitre_attack: ["T1003.001", "T1055"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeDebugPrivilege\s*=[^\r\n]*').Value
+      expected: "SeDebugPrivilege = *S-1-5-32-544"
+      match: equals
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeDebugPrivilege\s*=[^\r\n]*', 'SeDebugPrivilege = *S-1-5-32-544'); if ($c -notmatch '(?m)^SeDebugPrivilege') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeDebugPrivilege = *S-1-5-32-544" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-004
+    cis_ref: "2.2.31"
+    title: "Ensure 'Force shutdown from a remote system' is limited to Administrators"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: medium
+    description: "Allows only administrators to shut down this machine from the network."
+    rationale: "Remote shutdown is a simple denial-of-service and sabotage tool."
+    impact: "Non-admin remote shutdown tools stop working."
+    mitre_attack: ["T1529", "T1489"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeRemoteShutdownPrivilege\s*=[^\r\n]*').Value
+      expected: "SeRemoteShutdownPrivilege = *S-1-5-32-544"
+      match: equals
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeRemoteShutdownPrivilege\s*=[^\r\n]*', 'SeRemoteShutdownPrivilege = *S-1-5-32-544'); if ($c -notmatch '(?m)^SeRemoteShutdownPrivilege') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeRemoteShutdownPrivilege = *S-1-5-32-544" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-005
+    cis_ref: "2.2.32"
+    title: "Ensure 'Take ownership of files or other objects' is limited to Administrators"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: high
+    description: "Allows only administrators to take ownership of any file or registry key."
+    rationale: "Ownership lets a user grant themselves access to anything."
+    impact: "Non-admin users cannot take ownership of objects they cannot access."
+    mitre_attack: ["T1222", "T1548"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeTakeOwnershipPrivilege\s*=[^\r\n]*').Value
+      expected: "SeTakeOwnershipPrivilege = *S-1-5-32-544"
+      match: equals
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeTakeOwnershipPrivilege\s*=[^\r\n]*', 'SeTakeOwnershipPrivilege = *S-1-5-32-544'); if ($c -notmatch '(?m)^SeTakeOwnershipPrivilege') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeTakeOwnershipPrivilege = *S-1-5-32-544" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-006
+    cis_ref: "2.2.21"
+    title: "Ensure 'Act as part of the operating system' is assigned to no account"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: critical
+    description: "Removes the right to act as the operating system from every account."
+    rationale: "This right lets a process impersonate any user, making it a privilege-escalation shortcut."
+    impact: "Few applications need it. Software that does will fail and must be reviewed."
+    mitre_attack: ["T1134", "T1068"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $m = [regex]::Match((Get-Content $f -Raw), '(?m)^SeTcbPrivilege\s*=[^\r\n]*'); if ($m.Success) { $m.Value } else { 'SeTcbPrivilege =' }
+      expected: "SeTcbPrivilege ="
+      match: equals
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeTcbPrivilege\s*=[^\r\n]*', 'SeTcbPrivilege = '); if ($c -notmatch '(?m)^SeTcbPrivilege') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeTcbPrivilege = " }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-007
+    cis_ref: "2.2.30"
+    title: "Ensure 'Impersonate a client after authentication' is limited to administrators and service accounts"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: high
+    description: "Restricts impersonation rights to administrators and built-in service accounts."
+    rationale: "Broad impersonation rights let a low-privilege service be turned into a privileged one."
+    impact: "Custom services that run as ordinary users may need their own grant."
+    mitre_attack: ["T1134.001", "T1548"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeImpersonatePrivilege\s*=[^\r\n]*').Value
+      expected: "*S-1-5-32-544"
+      match: contains
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeImpersonatePrivilege\s*=[^\r\n]*', 'SeImpersonatePrivilege = *S-1-5-32-544,*S-1-5-19,*S-1-5-20,*S-1-5-6'); if ($c -notmatch '(?m)^SeImpersonatePrivilege') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeImpersonatePrivilege = *S-1-5-32-544,*S-1-5-19,*S-1-5-20,*S-1-5-6" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-008
+    cis_ref: "2.2.22"
+    title: "Ensure 'Load and unload device drivers' is limited to Administrators"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: high
+    description: "Allows only administrators to install or remove kernel drivers."
+    rationale: "A malicious driver runs with kernel privileges, the highest level on the machine."
+    impact: "Non-admin driver management tools stop working."
+    mitre_attack: ["T1547.006", "T1068"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeLoadDriverPrivilege\s*=[^\r\n]*').Value
+      expected: "SeLoadDriverPrivilege = *S-1-5-32-544"
+      match: equals
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeLoadDriverPrivilege\s*=[^\r\n]*', 'SeLoadDriverPrivilege = *S-1-5-32-544'); if ($c -notmatch '(?m)^SeLoadDriverPrivilege') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeLoadDriverPrivilege = *S-1-5-32-544" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-009
+    cis_ref: "2.2.10"
+    title: "Ensure 'Back up files and directories' is limited to Administrators"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: high
+    description: "Allows only administrators to bypass file permissions for backup."
+    rationale: "Backup privilege reads any file regardless of its permissions, including password databases."
+    impact: "Backup operators need an explicit grant through a managed backup account."
+    mitre_attack: ["T1003.002", "T1552"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeBackupPrivilege\s*=[^\r\n]*').Value
+      expected: "SeBackupPrivilege = *S-1-5-32-544"
+      match: equals
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeBackupPrivilege\s*=[^\r\n]*', 'SeBackupPrivilege = *S-1-5-32-544'); if ($c -notmatch '(?m)^SeBackupPrivilege') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeBackupPrivilege = *S-1-5-32-544" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-010
+    cis_ref: "2.2.3"
+    title: "Ensure 'Access this computer from the network' includes Administrators"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: medium
+    description: "Makes sure administrators keep network access so remote management still works after hardening."
+    rationale: "Removing network logon from administrators would break WinRM and file administration."
+    impact: "None when administrators already have this right. This control protects remote management."
+    mitre_attack: ["T1021"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeNetworkLogonRight\s*=[^\r\n]*').Value
+      expected: "*S-1-5-32-544"
+      match: contains
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeNetworkLogonRight\s*=[^\r\n]*', 'SeNetworkLogonRight = *S-1-5-32-544,*S-1-5-11,*S-1-5-32-545'); if ($c -notmatch '(?m)^SeNetworkLogonRight') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeNetworkLogonRight = *S-1-5-32-544,*S-1-5-11,*S-1-5-32-545" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: WIN-URA-011
+    cis_ref: "2.2.26"
+    title: "Ensure 'Deny log on as a service' includes Guests"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: low
+    description: "Stops guest accounts from being used to run services."
+    rationale: "Services running as guest give attackers a persistent foothold with a weak identity."
+    impact: "Guests cannot run services."
+    mitre_attack: ["T1543.003", "T1078.001"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeDenyServiceLogonRight\s*=[^\r\n]*').Value
+      expected: "*S-1-5-32-546"
+      match: contains
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeDenyServiceLogonRight\s*=[^\r\n]*', 'SeDenyServiceLogonRight = *S-1-5-32-546'); if ($c -notmatch '(?m)^SeDenyServiceLogonRight') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeDenyServiceLogonRight = *S-1-5-32-546" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-URA-012
+    cis_ref: "2.2.27"
+    title: "Ensure 'Deny log on as a batch job' includes Guests"
+    os: windows
+    category: "User rights assignment"
+    level: 1
+    severity: low
+    description: "Stops guest accounts from running scheduled batch jobs."
+    rationale: "Batch logons are a quiet way to run code under a weak identity."
+    impact: "Guests cannot run scheduled tasks."
+    mitre_attack: ["T1053.005", "T1078.001"]
+    audit:
+      type: secpol
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; [regex]::Match((Get-Content $f -Raw), '(?m)^SeDenyBatchLogonRight\s*=[^\r\n]*').Value
+      expected: "*S-1-5-32-546"
+      match: contains
+    remediation:
+      backup:
+        - type: secedit
+          path: USER_RIGHTS
+      command: |-
+        $f = Join-Path $env:TEMP 'hardenops-ur.inf'; $d = Join-Path $env:TEMP 'hardenops.sdb'; secedit /export /cfg $f /areas USER_RIGHTS | Out-Null; $c = Get-Content $f -Raw; $c = [regex]::Replace($c, '(?m)^SeDenyBatchLogonRight\s*=[^\r\n]*', 'SeDenyBatchLogonRight = *S-1-5-32-546'); if ($c -notmatch '(?m)^SeDenyBatchLogonRight') { $c = $c -replace '\[Privilege Rights\]', "[Privilege Rights]`r`nSeDenyBatchLogonRight = *S-1-5-32-546" }; Set-Content -Path $f -Value $c -Encoding Unicode; secedit /configure /db $d /cfg $f /areas USER_RIGHTS /quiet
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

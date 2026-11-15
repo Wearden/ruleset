@@ -1,0 +1,580 @@
+controls:
+  - id: WIN-SEC-001
+    cis_ref: "2.3.7.2"
+    title: "Ensure CTRL+ALT+DEL is required before interactive sign-in"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Makes users press CTRL+ALT+DEL at the sign-in screen, which keeps fake login prompts from capturing passwords."
+    rationale: "The secure attention sequence is handled by the OS, so a malicious program cannot imitate it."
+    impact: "One extra key press at each sign-in."
+    mitre_attack: ["T1056.002", "T1556"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'DisableCAD' -ErrorAction SilentlyContinue).DisableCAD
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: DisableCAD
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'DisableCAD' -Value 0 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-002
+    cis_ref: "2.3.7.1"
+    title: "Ensure the last signed-in user name is not shown at sign-in"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: low
+    description: "Hides the previous user name on the sign-in screen."
+    rationale: "Showing account names helps attackers guess valid usernames."
+    impact: "Users type their username each time."
+    mitre_attack: ["T1087"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'dontdisplaylastusername' -ErrorAction SilentlyContinue).dontdisplaylastusername
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: dontdisplaylastusername
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'dontdisplaylastusername' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-003
+    cis_ref: "2.3.7.3"
+    title: "Ensure the machine locks after 15 minutes of inactivity or less"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Locks an unattended desktop after 900 seconds without input."
+    rationale: "An unlocked desk is an easy takeover for anyone nearby."
+    impact: "Users re-enter their password after a break."
+    mitre_attack: ["T1078"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'InactivityTimeoutSecs' -ErrorAction SilentlyContinue).InactivityTimeoutSecs
+      expected: "900"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: InactivityTimeoutSecs
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'InactivityTimeoutSecs' -Value 900 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-004
+    cis_ref: "2.3.7.4"
+    title: "Ensure a legal notice caption is set at sign-in"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: low
+    description: "Shows a title on a warning screen before sign-in."
+    rationale: "A notice of authorised use supports legal action against intruders."
+    impact: "One extra click at sign-in."
+    mitre_attack: ["T1078"]
+    audit:
+      type: registry
+      command: |-
+        if ((Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'legalnoticecaption' -ErrorAction SilentlyContinue).legalnoticecaption) { 'set' } else { 'empty' }
+      expected: "set"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: legalnoticecaption
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'legalnoticecaption' -Value 'Authorised use only'
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-005
+    cis_ref: "2.3.7.5"
+    title: "Ensure a legal notice text is set at sign-in"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: low
+    description: "Shows the warning text on the sign-in notice screen."
+    rationale: "The notice states that access is monitored and unauthorised use is prohibited."
+    impact: "One extra click at sign-in."
+    mitre_attack: ["T1078"]
+    audit:
+      type: registry
+      command: |-
+        if ((Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'legalnoticetext' -ErrorAction SilentlyContinue).legalnoticetext) { 'set' } else { 'empty' }
+      expected: "set"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: legalnoticetext
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'legalnoticetext' -Value 'This system is for authorised use only. Activity is monitored and logged.'
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-006
+    cis_ref: "2.3.10.2"
+    title: "Ensure anonymous enumeration of SAM accounts is not allowed"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: high
+    description: "Stops anonymous users listing account names through the security database."
+    rationale: "Account lists give attackers valid usernames for password guessing."
+    impact: "Tools that list users without credentials stop working."
+    mitre_attack: ["T1087.002", "T1135"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'RestrictAnonymousSAM' -ErrorAction SilentlyContinue).RestrictAnonymousSAM
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: RestrictAnonymousSAM
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'RestrictAnonymousSAM' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-007
+    cis_ref: "2.3.10.3"
+    title: "Ensure anonymous enumeration of shares is restricted"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: high
+    description: "Stops anonymous users listing shares and their details."
+    rationale: "Share lists reveal where data is stored and which hosts to target."
+    impact: "Anonymous access to shares ends. Authenticated access is unchanged."
+    mitre_attack: ["T1135", "T1039"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'RestrictAnonymous' -ErrorAction SilentlyContinue).RestrictAnonymous
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: RestrictAnonymous
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'RestrictAnonymous' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-008
+    cis_ref: "2.3.10.6"
+    title: "Ensure 'Everyone' permissions do not apply to anonymous users"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: high
+    description: "Stops anonymous connections from receiving the Everyone group's rights."
+    rationale: "Anonymous users would otherwise inherit access granted to Everyone."
+    impact: "Shares and resources that rely on Everyone for anonymous access stop working."
+    mitre_attack: ["T1135", "T1078"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'EveryoneIncludesAnonymous' -ErrorAction SilentlyContinue).EveryoneIncludesAnonymous
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: EveryoneIncludesAnonymous
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'EveryoneIncludesAnonymous' -Value 0 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-009
+    cis_ref: "2.3.1.4"
+    title: "Ensure blank passwords are only allowed at the console"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: critical
+    description: "Stops accounts with empty passwords from signing in over the network."
+    rationale: "Empty passwords can be used from anywhere on the network without any guessing."
+    impact: "Accounts with empty passwords cannot sign in remotely."
+    mitre_attack: ["T1078.001", "T1021"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'LimitBlankPasswordUse' -ErrorAction SilentlyContinue).LimitBlankPasswordUse
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: LimitBlankPasswordUse
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'LimitBlankPasswordUse' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-010
+    cis_ref: "2.3.1.6"
+    title: "Ensure shutdown without logon is disabled"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Stops the sign-in screen from offering a shutdown button to people who are not signed in."
+    rationale: "Anyone at the console could power off the machine without credentials."
+    impact: "Shutdown requires signing in first."
+    mitre_attack: ["T1529", "T1489"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'shutdownwithoutlogon' -ErrorAction SilentlyContinue).shutdownwithoutlogon
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: shutdownwithoutlogon
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'shutdownwithoutlogon' -Value 0 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-011
+    cis_ref: "2.3.9.2"
+    title: "Ensure SMB server always digitally signs communications"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: high
+    description: "Requires the file server side of SMB to sign every packet."
+    rationale: "Signed SMB traffic stops relay and tampering attacks on file sharing."
+    impact: "Very old SMB clients that cannot sign will fail to connect."
+    mitre_attack: ["T1557.001", "T1021.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'RequireSecuritySignature' -ErrorAction SilentlyContinue).RequireSecuritySignature
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters'
+          name: RequireSecuritySignature
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'RequireSecuritySignature' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-012
+    cis_ref: "2.3.8.2"
+    title: "Ensure SMB client always digitally signs communications"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: high
+    description: "Requires the client side of SMB to sign every packet."
+    rationale: "Stops tampering with file traffic when this machine connects to shares."
+    impact: "Connections to file servers that do not sign will fail."
+    mitre_attack: ["T1557.001"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'RequireSecuritySignature' -ErrorAction SilentlyContinue).RequireSecuritySignature
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters'
+          name: RequireSecuritySignature
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'RequireSecuritySignature' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-013
+    cis_ref: "2.3.9.3"
+    title: "Ensure SMB server signs communications when the client agrees"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Allows and encourages signing on the SMB server side when clients ask for it."
+    rationale: "Signing is cheap insurance when the client supports it."
+    impact: "Small CPU cost on file transfers."
+    mitre_attack: ["T1557.001"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'EnableSecuritySignature' -ErrorAction SilentlyContinue).EnableSecuritySignature
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters'
+          name: EnableSecuritySignature
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters' -Name 'EnableSecuritySignature' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-014
+    cis_ref: "2.3.2.1"
+    title: "Ensure audit policy subcategory settings override legacy category settings"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Makes the detailed audit policy (auditpol) take precedence over the older category-level audit settings."
+    rationale: "Mixed audit modes make it unclear what is actually being recorded."
+    impact: "None when the advanced audit policy is configured as in WIN-AUD controls."
+    mitre_attack: ["T1562.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'SCENoApplyLegacyAuditPolicy' -ErrorAction SilentlyContinue).SCENoApplyLegacyAuditPolicy
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+          name: SCENoApplyLegacyAuditPolicy
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name 'SCENoApplyLegacyAuditPolicy' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-015
+    cis_ref: "2.3.17.1"
+    title: "Ensure User Account Control (Admin Approval Mode) is enabled"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: high
+    description: "Runs administrators with a limited token until they explicitly elevate."
+    rationale: "Limits what malware running in an admin session can do silently."
+    impact: "Administrators see elevation prompts. Some older tools need an elevated shell."
+    mitre_attack: ["T1548.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -ErrorAction SilentlyContinue).EnableLUA
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: EnableLUA
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: true
+    risky: false
+
+  - id: WIN-SEC-016
+    cis_ref: "2.3.17.2"
+    title: "Ensure UAC prompts appear on the secure desktop"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Shows elevation prompts on the secure desktop, where other programs cannot click them."
+    rationale: "Stops malware from auto-approving or overlaying elevation prompts."
+    impact: "Elevation prompts briefly dim the screen."
+    mitre_attack: ["T1548.002", "T1056"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'PromptOnSecureDesktop' -ErrorAction SilentlyContinue).PromptOnSecureDesktop
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: PromptOnSecureDesktop
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'PromptOnSecureDesktop' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-017
+    cis_ref: "2.3.17.3"
+    title: "Ensure UAC requires consent on the secure desktop for administrators"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Makes administrators confirm each elevation on the secure desktop."
+    rationale: "Prevents silent elevation by programs running in an admin session."
+    impact: "Administrators confirm each elevation."
+    mitre_attack: ["T1548.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorAdmin' -ErrorAction SilentlyContinue).ConsentPromptBehaviorAdmin
+      expected: "2"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: ConsentPromptBehaviorAdmin
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorAdmin' -Value 2 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-018
+    cis_ref: "2.3.17.5"
+    title: "Ensure built-in Administrator runs in Admin Approval Mode"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Applies elevation prompts to the built-in Administrator account too."
+    rationale: "The built-in Administrator is a well-known target, so it should not run unrestricted."
+    impact: "Built-in Administrator sessions show elevation prompts."
+    mitre_attack: ["T1078.001", "T1548.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -ErrorAction SilentlyContinue).FilterAdministratorToken
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+          name: FilterAdministratorToken
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: true
+    risky: false
+
+  - id: WIN-SEC-019
+    cis_ref: "18.4.1"
+    title: "Ensure users cannot add printer drivers without administrator rights"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: medium
+    description: "Stops standard users installing printer drivers, which run in the spooler with high privileges."
+    rationale: "Malicious printer drivers are a known route to system-level code execution."
+    impact: "Standard users need an administrator to add a printer driver."
+    mitre_attack: ["T1547.012", "T1068"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers' -Name 'AddPrinterDrivers' -ErrorAction SilentlyContinue).AddPrinterDrivers
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers'
+          name: AddPrinterDrivers
+      command: |-
+        if (-not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers')) { New-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers' -Force | Out-Null }; Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers' -Name 'AddPrinterDrivers' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: WIN-SEC-020
+    cis_ref: "2.3.6.6"
+    title: "Ensure the domain secure channel is encrypted or signed"
+    os: windows
+    category: "Security options"
+    level: 1
+    severity: high
+    description: "Requires the secure channel to the domain controller to be encrypted or signed."
+    rationale: "Unsigned secure-channel traffic can be tampered with to forge machine trust."
+    impact: "Domain members that cannot sign the channel will fail to authenticate. Applies to domain-joined machines only."
+    mitre_attack: ["T1557", "T1550.002"]
+    audit:
+      type: registry
+      command: |-
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters' -Name 'RequireSignOrSeal' -ErrorAction SilentlyContinue).RequireSignOrSeal
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: registry
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters'
+          name: RequireSignOrSeal
+      command: |-
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters' -Name 'RequireSignOrSeal' -Value 1 -Type DWord
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

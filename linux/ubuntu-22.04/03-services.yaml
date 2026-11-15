@@ -1,0 +1,336 @@
+controls:
+  - id: LNX-SVC-001
+    cis_ref: "2.2.3"
+    title: "Ensure Avahi daemon is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: low
+    description: "Turns off Avahi, the zero-configuration network discovery service."
+    rationale: "Discovery services advertise the host and expose extra protocol handling."
+    impact: "Local name discovery (mDNS) stops working on the host."
+    mitre_attack: ["T1046", "T1557"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled avahi-daemon 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: avahi-daemon
+      command: |-
+        systemctl disable --now avahi-daemon.service avahi-daemon.socket 2>/dev/null || true; systemctl mask avahi-daemon.service avahi-daemon.socket 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-002
+    cis_ref: "2.2.4"
+    title: "Ensure CUPS printing service is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: low
+    description: "Turns off the CUPS print server."
+    rationale: "A print server listening on the network is unneeded attack surface."
+    impact: "Printing from this host stops working."
+    mitre_attack: ["T1210"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled cups 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: cups
+      command: |-
+        systemctl disable --now cups.service cups.socket 2>/dev/null || true; systemctl mask cups.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-003
+    cis_ref: "2.2.5"
+    title: "Ensure DHCP server is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the ISC DHCP server, which should only run on dedicated DHCP hosts."
+    rationale: "A rogue DHCP server can redirect traffic for every client on the segment."
+    impact: "This host can no longer hand out DHCP leases."
+    mitre_attack: ["T1557"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled isc-dhcp-server 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: isc-dhcp-server
+      command: |-
+        systemctl disable --now isc-dhcp-server.service 2>/dev/null || true; systemctl mask isc-dhcp-server.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-004
+    cis_ref: "2.2.6"
+    title: "Ensure LDAP server (slapd) is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the OpenLDAP server unless this host is a directory server."
+    rationale: "Directory services hold identity data and are high-value targets."
+    impact: "This host can no longer serve LDAP."
+    mitre_attack: ["T1078", "T1087"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled slapd 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: slapd
+      command: |-
+        systemctl disable --now slapd.service 2>/dev/null || true; systemctl mask slapd.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-005
+    cis_ref: "2.2.7"
+    title: "Ensure NFS server is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the NFS server so this host does not export file systems."
+    rationale: "Exported file systems can expose data and allow remote writes."
+    impact: "Clients can no longer mount exports from this host."
+    mitre_attack: ["T1039", "T1021"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled nfs-server 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: nfs-server
+      command: |-
+        systemctl disable --now nfs-server.service 2>/dev/null || true; systemctl mask nfs-server.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-006
+    cis_ref: "2.2.8"
+    title: "Ensure rpcbind is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the RPC portmapper, which older NFS and NIS services depend on."
+    rationale: "rpcbind exposes a port-mapping service that enumerators probe for."
+    impact: "NFS and NIS clients on this host will not work."
+    mitre_attack: ["T1046"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled rpcbind 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: rpcbind
+      command: |-
+        systemctl disable --now rpcbind.service rpcbind.socket 2>/dev/null || true; systemctl mask rpcbind.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-007
+    cis_ref: "2.2.9"
+    title: "Ensure rsync service is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: low
+    description: "Turns off the rsync daemon. Scheduled rsync over SSH is not affected."
+    rationale: "The rsync daemon offers unauthenticated file access unless configured carefully."
+    impact: "Hosts that serve files over the rsync protocol stop doing so."
+    mitre_attack: ["T1039"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled rsync 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: rsync
+      command: |-
+        systemctl disable --now rsync.service 2>/dev/null || true; systemctl mask rsync.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-008
+    cis_ref: "2.2.14"
+    title: "Ensure DNS server (BIND) is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the BIND name server unless this host is a DNS server."
+    rationale: "DNS servers accept queries from the network and are a common attack target."
+    impact: "This host stops answering DNS queries."
+    mitre_attack: ["T1584.002", "T1046"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled named 2>/dev/null || systemctl is-enabled bind9 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: named
+      command: |-
+        systemctl disable --now named.service bind9.service 2>/dev/null || true; systemctl mask named.service bind9.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-009
+    cis_ref: "2.2.15"
+    title: "Ensure FTP server (vsftpd) is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the vsftpd FTP server."
+    rationale: "FTP sends credentials in clear text and is rarely needed on servers."
+    impact: "Clients that depend on FTP to this host will fail. Use SFTP over SSH instead."
+    mitre_attack: ["T1021", "T1040"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled vsftpd 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: vsftpd
+      command: |-
+        systemctl disable --now vsftpd.service 2>/dev/null || true; systemctl mask vsftpd.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-010
+    cis_ref: "2.2.16"
+    title: "Ensure SNMP server is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the SNMP agent unless monitoring requires it."
+    rationale: "SNMP v1 and v2 use community strings sent in clear text and expose system detail."
+    impact: "Monitoring systems that poll this host over SNMP will lose data."
+    mitre_attack: ["T1602", "T1046"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled snmpd 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: snmpd
+      command: |-
+        systemctl disable --now snmpd.service 2>/dev/null || true; systemctl mask snmpd.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-011
+    cis_ref: "2.3.1"
+    title: "Ensure xinetd super-server is not installed or disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: medium
+    description: "Turns off the legacy xinetd super-server that starts network services on demand."
+    rationale: "xinetd hosts legacy services such as telnet and rsh, which send data in clear text."
+    impact: "Services configured through xinetd stop."
+    mitre_attack: ["T1021.004"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled xinetd 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: xinetd
+      command: |-
+        systemctl disable --now xinetd.service 2>/dev/null || true; systemctl mask xinetd.service 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SVC-012
+    cis_ref: "2.3.4"
+    title: "Ensure telnet socket is disabled"
+    os: linux
+    category: "Services to disable"
+    level: 1
+    severity: high
+    description: "Turns off the telnet service socket, which accepts plain-text remote logins."
+    rationale: "Telnet sends passwords in clear text. SSH replaces it."
+    impact: "Remote telnet logins stop. Use SSH."
+    mitre_attack: ["T1021.004", "T1040"]
+    audit:
+      type: service
+      command: |-
+        systemctl is-enabled telnet.socket 2>/dev/null || true
+      expected: "^(disabled|masked|static|not-found|)$"
+      match: regex
+    remediation:
+      backup:
+        - type: service
+          name: telnet.socket
+      command: |-
+        systemctl disable --now telnet.socket 2>/dev/null || true; systemctl mask telnet.socket 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

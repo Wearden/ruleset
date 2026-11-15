@@ -1,0 +1,172 @@
+controls:
+  - id: LNX-LOG-001
+    cis_ref: "4.2.1.1"
+    title: "Ensure systemd-journald keeps logs in persistent storage"
+    os: linux
+    category: "Logging (journald and rsyslog)"
+    level: 1
+    severity: medium
+    description: "Stores journal logs on disk so they survive reboots."
+    rationale: "Logs that vanish at reboot hide what happened before an attacker rebooted the host."
+    impact: "Journal files use disk space. Size is limited by the configured maximum."
+    mitre_attack: ["T1070.002", "T1562.002"]
+    audit:
+      type: command
+      command: |-
+        systemd-analyze cat-config systemd/journald.conf 2>/dev/null | grep -E '^Storage=' | tail -n 1 | tr -d ' ' || echo none
+      expected: "Storage=persistent"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/systemd/journald.conf.d/hardenops.conf
+      command: |-
+        mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nStorage=persistent\n' > /etc/systemd/journald.conf.d/hardenops.conf && systemctl restart systemd-journald
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-LOG-002
+    cis_ref: "4.2.1.3"
+    title: "Ensure journal logs are compressed"
+    os: linux
+    category: "Logging (journald and rsyslog)"
+    level: 1
+    severity: low
+    description: "Compresses rotated journal files to save disk space."
+    rationale: "Keeping logs longer within the same disk budget preserves evidence."
+    impact: "Slight CPU cost when rotating logs."
+    mitre_attack: ["T1070.002"]
+    audit:
+      type: command
+      command: |-
+        systemd-analyze cat-config systemd/journald.conf 2>/dev/null | grep -E '^Compress=' | tail -n 1 | tr -d ' ' || echo none
+      expected: "Compress=yes"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/systemd/journald.conf.d/hardenops-compress.conf
+      command: |-
+        mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nCompress=yes\n' > /etc/systemd/journald.conf.d/hardenops-compress.conf && systemctl restart systemd-journald
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-LOG-003
+    cis_ref: "4.2.4"
+    title: "Ensure authentication log is not readable by everyone"
+    os: linux
+    category: "Logging (journald and rsyslog)"
+    level: 1
+    severity: medium
+    description: "Restricts /var/log/auth.log so only root and the adm group can read it."
+    rationale: "The authentication log contains usernames and failed login detail that help attackers."
+    impact: "Non-admin users can no longer read the log with cat or tail."
+    mitre_attack: ["T1003", "T1552"]
+    audit:
+      type: command
+      command: |-
+        stat -c '%a' /var/log/auth.log 2>/dev/null || echo missing
+      expected: "^(640|600|400|0)$"
+      match: regex
+    remediation:
+      backup:
+        - type: file
+          path: /var/log/auth.log
+      command: |-
+        chmod 0640 /var/log/auth.log 2>/dev/null || true
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-LOG-004
+    cis_ref: "4.2.2.1"
+    title: "Ensure rsyslog is installed"
+    os: linux
+    category: "Logging (journald and rsyslog)"
+    level: 1
+    severity: medium
+    description: "Installs rsyslog so logs are written to traditional text files that tools and SIEMs expect."
+    rationale: "Text logs are easier to ship to a central collector and to protect."
+    impact: "Duplicate log writing on hosts that already use journald only."
+    mitre_attack: ["T1562.002"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' rsyslog 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W rsyslog"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y rsyslog
+    rollback:
+      strategy: command
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get remove -y rsyslog
+    reboot_required: false
+    risky: false
+
+  - id: LNX-LOG-005
+    cis_ref: "4.3"
+    title: "Ensure logrotate is installed"
+    os: linux
+    category: "Logging (journald and rsyslog)"
+    level: 1
+    severity: low
+    description: "Installs logrotate so log files are rotated and do not fill the disk."
+    rationale: "A full disk stops logging, and an attacker can exploit that to hide activity."
+    impact: "None on standard Ubuntu. Some minimal images need the package."
+    mitre_attack: ["T1562.002"]
+    audit:
+      type: command
+      command: |-
+        dpkg-query -W -f='${Status}' logrotate 2>/dev/null || echo missing
+      expected: "install ok installed"
+      match: equals
+    remediation:
+      backup:
+        - type: command
+          path: "dpkg-query -W logrotate"
+      command: |-
+        DEBIAN_FRONTEND=noninteractive apt-get install -y logrotate
+    rollback:
+      strategy: command
+      command: |-
+        echo "logrotate is left installed on rollback"
+    reboot_required: false
+    risky: false
+
+  - id: LNX-LOG-006
+    cis_ref: "5.3.3"
+    title: "Ensure sudo commands are logged to a dedicated file"
+    os: linux
+    category: "Logging (journald and rsyslog)"
+    level: 1
+    severity: medium
+    description: "Configures sudo to write every privileged command to /var/log/sudo.log."
+    rationale: "A separate sudo log gives a clear record of who ran what as root."
+    impact: "Sudo logs grow with use. Logrotate should cover the new file."
+    mitre_attack: ["T1548.003", "T1562.002"]
+    audit:
+      type: command
+      command: |-
+        grep -rhs '^Defaults.*logfile' /etc/sudoers /etc/sudoers.d 2>/dev/null | wc -l
+      expected: "1"
+      match: numeric_gte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sudoers.d/hardenops-logging
+      command: |-
+        printf 'Defaults logfile="/var/log/sudo.log"\n' > /etc/sudoers.d/hardenops-logging.tmp && visudo -cf /etc/sudoers.d/hardenops-logging.tmp && chmod 0440 /etc/sudoers.d/hardenops-logging.tmp && mv /etc/sudoers.d/hardenops-logging.tmp /etc/sudoers.d/hardenops-logging || { rm -f /etc/sudoers.d/hardenops-logging.tmp; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

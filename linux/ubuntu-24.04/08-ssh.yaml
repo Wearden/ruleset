@@ -1,0 +1,422 @@
+controls:
+  - id: LNX-SSH-001
+    cis_ref: "5.2.1"
+    title: "Ensure permissions on /etc/ssh/sshd_config are 600 and owned by root"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: high
+    description: "Makes the SSH server configuration readable and writable only by root."
+    rationale: "Anyone who can edit the SSH configuration can weaken or backdoor remote access."
+    impact: "None for normal administration. Editing the file requires root."
+    mitre_attack: ["T1098.004", "T1562.001"]
+    audit:
+      type: file_regex
+      command: |-
+        stat -c '%a %U %G' /etc/ssh/sshd_config 2>/dev/null || echo missing
+      expected: "600 root root"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config
+      command: |-
+        chown root:root /etc/ssh/sshd_config && chmod 600 /etc/ssh/sshd_config
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-002
+    cis_ref: "5.2.5"
+    title: "Ensure SSH LogLevel is INFO or VERBOSE"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: medium
+    description: "Makes sshd record logins and key fingerprints in the logs."
+    rationale: "Login records are the evidence needed to detect key misuse and brute-force attempts."
+    impact: "Slightly more log volume."
+    mitre_attack: ["T1562.002", "T1110"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="loglevel"{print $2}'
+      expected: "^(INFO|VERBOSE)$"
+      match: regex
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-002.conf
+      command: |-
+        printf 'LogLevel INFO\n' > /etc/ssh/sshd_config.d/hardenops-ssh-002.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-002.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-003
+    cis_ref: "5.2.6"
+    title: "Ensure SSH X11 forwarding is disabled"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: medium
+    description: "Stops remote users from forwarding X11 graphical sessions through SSH."
+    rationale: "X11 forwarding lets a compromised client capture keystrokes and screens of the server session."
+    impact: "Graphical programs run over SSH stop working."
+    mitre_attack: ["T1021.004", "T1056"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="x11forwarding"{print $1" "$2}'
+      expected: "x11forwarding no"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-003.conf
+      command: |-
+        printf 'X11Forwarding no\n' > /etc/ssh/sshd_config.d/hardenops-ssh-003.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-003.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-004
+    cis_ref: "5.2.7"
+    title: "Ensure SSH MaxAuthTries is 4 or less"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: medium
+    description: "Limits failed login attempts per connection."
+    rationale: "A low limit makes password guessing on one connection slow and noisy."
+    impact: "Users who mistype passwords more than four times are disconnected."
+    mitre_attack: ["T1110.001"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="maxauthtries"{print $2}'
+      expected: "4"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-004.conf
+      command: |-
+        printf 'MaxAuthTries 4\n' > /etc/ssh/sshd_config.d/hardenops-ssh-004.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-004.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-005
+    cis_ref: "5.2.8"
+    title: "Ensure SSH IgnoreRhosts is enabled"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: medium
+    description: "Stops sshd from trusting the legacy .rhosts files."
+    rationale: ".rhosts trust lets one host log in without a password, which spreads compromise."
+    impact: "Only affects legacy rhosts-based logins, which should not exist."
+    mitre_attack: ["T1021.004"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="ignorerhosts"{print $1" "$2}'
+      expected: "ignorerhosts yes"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-005.conf
+      command: |-
+        printf 'IgnoreRhosts yes\n' > /etc/ssh/sshd_config.d/hardenops-ssh-005.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-005.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-006
+    cis_ref: "5.2.9"
+    title: "Ensure SSH HostbasedAuthentication is disabled"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: high
+    description: "Turns off authentication that trusts whole client hosts instead of users."
+    rationale: "Host-based trust lets any user on a trusted host log in as any other user."
+    impact: "Only affects host-based logins, which should not be used."
+    mitre_attack: ["T1021.004", "T1078"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="hostbasedauthentication"{print $1" "$2}'
+      expected: "hostbasedauthentication no"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-006.conf
+      command: |-
+        printf 'HostbasedAuthentication no\n' > /etc/ssh/sshd_config.d/hardenops-ssh-006.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-006.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-007
+    cis_ref: "5.2.10"
+    title: "Ensure SSH root login is disabled"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: critical
+    description: "Stops anyone logging in over SSH directly as root. Administrators log in as themselves and use sudo."
+    rationale: "Direct root login removes accountability and makes root the single target for brute force."
+    impact: "Root cannot log in over SSH any more. Make sure a sudo-capable admin account can log in first, or you will be locked out."
+    mitre_attack: ["T1110", "T1021.004", "T1078.003"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="permitrootlogin"{print $1" "$2}'
+      expected: "permitrootlogin no"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-007.conf
+      command: |-
+        printf 'PermitRootLogin no\n' > /etc/ssh/sshd_config.d/hardenops-ssh-007.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-007.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: LNX-SSH-008
+    cis_ref: "5.2.11"
+    title: "Ensure SSH PermitEmptyPasswords is disabled"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: critical
+    description: "Refuses SSH logins to accounts that have no password."
+    rationale: "An account without a password can be entered by anyone who knows its name."
+    impact: "Accounts without passwords (for example key-only accounts) still work with keys."
+    mitre_attack: ["T1078.001", "T1110"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="permitemptypasswords"{print $1" "$2}'
+      expected: "permitemptypasswords no"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-008.conf
+      command: |-
+        printf 'PermitEmptyPasswords no\n' > /etc/ssh/sshd_config.d/hardenops-ssh-008.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-008.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-009
+    cis_ref: "5.2.12"
+    title: "Ensure SSH PermitUserEnvironment is disabled"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: medium
+    description: "Stops users from setting environment variables that change how the server runs their session."
+    rationale: "Environment settings such as LD_PRELOAD can inject code into every program a user starts."
+    impact: "Scripts that depend on user-supplied SSH environment variables stop working."
+    mitre_attack: ["T1574.006"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="permituserenvironment"{print $1" "$2}'
+      expected: "permituserenvironment no"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-009.conf
+      command: |-
+        printf 'PermitUserEnvironment no\n' > /etc/ssh/sshd_config.d/hardenops-ssh-009.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-009.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-010
+    cis_ref: "5.2.13"
+    title: "Ensure SSH idle sessions time out (ClientAliveInterval 300 or less)"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: medium
+    description: "Disconnects sessions that have been silent for five minutes."
+    rationale: "Abandoned sessions left open are an easy takeover path on shared desks."
+    impact: "Long idle sessions are dropped. Use a terminal multiplexer such as tmux for long jobs."
+    mitre_attack: ["T1563"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="clientaliveinterval"{print $2}'
+      expected: "300"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-010.conf
+      command: |-
+        printf 'ClientAliveInterval 300\n' > /etc/ssh/sshd_config.d/hardenops-ssh-010.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-010.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-011
+    cis_ref: "5.2.14"
+    title: "Ensure SSH ClientAliveCountMax is 3 or less"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: low
+    description: "Limits how many unanswered keep-alive probes are sent before a session is closed."
+    rationale: "Pairs with the idle timeout so dead sessions close promptly."
+    impact: "Sessions on very unstable networks may drop sooner."
+    mitre_attack: ["T1563"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="clientalivecountmax"{print $2}'
+      expected: "3"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-011.conf
+      command: |-
+        printf 'ClientAliveCountMax 3\n' > /etc/ssh/sshd_config.d/hardenops-ssh-011.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-011.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-012
+    cis_ref: "5.2.16"
+    title: "Ensure SSH LoginGraceTime is 60 seconds or less"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: low
+    description: "Closes connections that do not finish authenticating within 60 seconds."
+    rationale: "Stops half-open connections from holding server resources during brute-force attempts."
+    impact: "Very slow manual logins may time out."
+    mitre_attack: ["T1110", "T1499"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="logingracetime"{print $2}'
+      expected: "60"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-012.conf
+      command: |-
+        printf 'LoginGraceTime 60\n' > /etc/ssh/sshd_config.d/hardenops-ssh-012.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-012.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-013
+    cis_ref: "5.2.20"
+    title: "Ensure SSH MaxSessions is 10 or less"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: low
+    description: "Limits how many sessions one connection can multiplex."
+    rationale: "Caps resource use by one client."
+    impact: "Automation that opens many sessions on one connection may fail."
+    mitre_attack: ["T1499"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="maxsessions"{print $2}'
+      expected: "10"
+      match: numeric_lte
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-013.conf
+      command: |-
+        printf 'MaxSessions 10\n' > /etc/ssh/sshd_config.d/hardenops-ssh-013.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-013.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-014
+    cis_ref: "5.2.19"
+    title: "Ensure SSH uses PAM for session and account handling"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: medium
+    description: "Keeps PAM in the login path so account lockout, password policy and session logging apply to SSH."
+    rationale: "Bypassing PAM skips the controls configured in the PAM section of this benchmark."
+    impact: "None on Ubuntu defaults. Changing this breaks the PAM policies."
+    mitre_attack: ["T1110", "T1078"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="usepam"{print $1" "$2}'
+      expected: "usepam yes"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-014.conf
+      command: |-
+        printf 'UsePAM yes\n' > /etc/ssh/sshd_config.d/hardenops-ssh-014.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-014.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-SSH-015
+    cis_ref: "5.2.18"
+    title: "Ensure SSH warning banner is configured"
+    os: linux
+    category: "SSH server configuration"
+    level: 1
+    severity: low
+    description: "Shows a legal and authorised-use warning before the login prompt."
+    rationale: "A visible warning supports prosecution of unauthorised access and sets expectations for users."
+    impact: "Adds a text notice to every SSH login."
+    mitre_attack: ["T1078"]
+    audit:
+      type: command
+      command: |-
+        sshd -T 2>/dev/null | awk '$1=="banner"{print $2}'
+      expected: "/etc/issue.net"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/issue.net
+        - type: file
+          path: /etc/ssh/sshd_config.d/hardenops-ssh-015.conf
+      command: |-
+        printf 'Authorised use only. All activity is monitored and logged.\n' > /etc/issue.net && printf 'Banner /etc/issue.net\n' > /etc/ssh/sshd_config.d/hardenops-ssh-015.conf && (sshd -t && systemctl reload ssh) || { rm -f /etc/ssh/sshd_config.d/hardenops-ssh-015.conf; exit 1; }
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

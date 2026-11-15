@@ -1,0 +1,360 @@
+controls:
+  - id: LNX-NET-001
+    cis_ref: "3.1.1"
+    title: "Ensure IP forwarding is disabled"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Stops the kernel from routing packets between interfaces unless the host is a router."
+    rationale: "A server that forwards traffic can be used to pivot into other network segments."
+    impact: "Routing, VPN or container bridging through this host stops working."
+    mitre_attack: ["T1599", "T1090"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.ip_forward
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-ip-forward.conf
+        - type: sysctl
+          name: net.ipv4.ip_forward
+      command: |-
+        printf 'net.ipv4.ip_forward = 0\n' > /etc/sysctl.d/99-hardenops-ip-forward.conf && sysctl -w net.ipv4.ip_forward=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-002
+    cis_ref: "3.1.2"
+    title: "Ensure packet redirect sending is disabled (all interfaces)"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Stops the host from sending ICMP redirect messages."
+    rationale: "Redirects can be abused to steer traffic through an attacker."
+    impact: "Few servers depend on sending redirects."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.all.send_redirects
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-send-redirects-all.conf
+        - type: sysctl
+          name: net.ipv4.conf.all.send_redirects
+      command: |-
+        printf 'net.ipv4.conf.all.send_redirects = 0\n' > /etc/sysctl.d/99-hardenops-send-redirects-all.conf && sysctl -w net.ipv4.conf.all.send_redirects=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-003
+    cis_ref: "3.1.2"
+    title: "Ensure packet redirect sending is disabled (default interfaces)"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Applies the same redirect-sending block to interfaces that appear later."
+    rationale: "New interfaces would otherwise inherit the insecure default."
+    impact: "Few servers depend on sending redirects."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.default.send_redirects
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-send-redirects-default.conf
+        - type: sysctl
+          name: net.ipv4.conf.default.send_redirects
+      command: |-
+        printf 'net.ipv4.conf.default.send_redirects = 0\n' > /etc/sysctl.d/99-hardenops-send-redirects-default.conf && sysctl -w net.ipv4.conf.default.send_redirects=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-004
+    cis_ref: "3.2.1"
+    title: "Ensure source-routed packets are not accepted (all interfaces)"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: high
+    description: "Rejects IP packets that specify their own route through the network."
+    rationale: "Source routing lets an attacker reach internal hosts through a path the defenders do not control."
+    impact: "Very few legitimate networks use source routing."
+    mitre_attack: ["T1599", "T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.all.accept_source_route
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-source-route-all.conf
+        - type: sysctl
+          name: net.ipv4.conf.all.accept_source_route
+      command: |-
+        printf 'net.ipv4.conf.all.accept_source_route = 0\n' > /etc/sysctl.d/99-hardenops-source-route-all.conf && sysctl -w net.ipv4.conf.all.accept_source_route=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-005
+    cis_ref: "3.2.1"
+    title: "Ensure source-routed packets are not accepted (default interfaces)"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: high
+    description: "Applies the source-route rejection to interfaces that appear later."
+    rationale: "New interfaces would otherwise accept source-routed packets."
+    impact: "Very few legitimate networks use source routing."
+    mitre_attack: ["T1599"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.default.accept_source_route
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-source-route-default.conf
+        - type: sysctl
+          name: net.ipv4.conf.default.accept_source_route
+      command: |-
+        printf 'net.ipv4.conf.default.accept_source_route = 0\n' > /etc/sysctl.d/99-hardenops-source-route-default.conf && sysctl -w net.ipv4.conf.default.accept_source_route=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-006
+    cis_ref: "3.2.2"
+    title: "Ensure ICMP redirects are not accepted (all interfaces)"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: high
+    description: "Ignores ICMP redirect messages that try to change the routing table."
+    rationale: "Forged redirects are a classic man-in-the-middle technique."
+    impact: "Hosts depending on redirects to find routes may lose connectivity. Rare on servers."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.all.accept_redirects
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-accept-redirects-all.conf
+        - type: sysctl
+          name: net.ipv4.conf.all.accept_redirects
+      command: |-
+        printf 'net.ipv4.conf.all.accept_redirects = 0\n' > /etc/sysctl.d/99-hardenops-accept-redirects-all.conf && sysctl -w net.ipv4.conf.all.accept_redirects=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-007
+    cis_ref: "3.2.2"
+    title: "Ensure ICMP redirects are not accepted (default interfaces)"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: high
+    description: "Applies the redirect rejection to interfaces that appear later."
+    rationale: "New interfaces would otherwise accept forged redirects."
+    impact: "Rare on servers."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.default.accept_redirects
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-accept-redirects-default.conf
+        - type: sysctl
+          name: net.ipv4.conf.default.accept_redirects
+      command: |-
+        printf 'net.ipv4.conf.default.accept_redirects = 0\n' > /etc/sysctl.d/99-hardenops-accept-redirects-default.conf && sysctl -w net.ipv4.conf.default.accept_redirects=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-008
+    cis_ref: "3.2.3"
+    title: "Ensure secure ICMP redirects are not accepted"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Ignores redirects even when they come from the host's own gateway list."
+    rationale: "Secure redirects still let a compromised gateway reroute traffic."
+    impact: "Rare on servers."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.all.secure_redirects
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-secure-redirects.conf
+        - type: sysctl
+          name: net.ipv4.conf.all.secure_redirects
+      command: |-
+        printf 'net.ipv4.conf.all.secure_redirects = 0\n' > /etc/sysctl.d/99-hardenops-secure-redirects.conf && sysctl -w net.ipv4.conf.all.secure_redirects=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-009
+    cis_ref: "3.2.4"
+    title: "Ensure suspicious packets are logged (log martians)"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Logs packets with impossible source addresses so spoofing attempts show up in the logs."
+    rationale: "Spoofed traffic is a sign of reconnaissance or attack and should be visible."
+    impact: "Log volume rises on hosts that see spoofed traffic."
+    mitre_attack: ["T1562.002", "T1595"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.all.log_martians
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-log-martians.conf
+        - type: sysctl
+          name: net.ipv4.conf.all.log_martians
+      command: |-
+        printf 'net.ipv4.conf.all.log_martians = 1\n' > /etc/sysctl.d/99-hardenops-log-martians.conf && sysctl -w net.ipv4.conf.all.log_martians=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-010
+    cis_ref: "3.3.5"
+    title: "Ensure broadcast ICMP echo requests are ignored"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: low
+    description: "Stops the host answering pings sent to broadcast addresses."
+    rationale: "Broadcast ping replies are used to amplify denial-of-service attacks and map networks."
+    impact: "Broadcast pings no longer get replies. Normal unicast ping still works."
+    mitre_attack: ["T1498", "T1046"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.icmp_echo_ignore_broadcasts
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-icmp-broadcast.conf
+        - type: sysctl
+          name: net.ipv4.icmp_echo_ignore_broadcasts
+      command: |-
+        printf 'net.ipv4.icmp_echo_ignore_broadcasts = 1\n' > /etc/sysctl.d/99-hardenops-icmp-broadcast.conf && sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-011
+    cis_ref: "3.3.8"
+    title: "Ensure TCP SYN cookies are enabled"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Enables SYN cookies so the host survives SYN flood attempts."
+    rationale: "Without SYN cookies a small flood can exhaust the connection table."
+    impact: "None for normal workloads."
+    mitre_attack: ["T1499", "T1498"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.tcp_syncookies
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-syncookies.conf
+        - type: sysctl
+          name: net.ipv4.tcp_syncookies
+      command: |-
+        printf 'net.ipv4.tcp_syncookies = 1\n' > /etc/sysctl.d/99-hardenops-syncookies.conf && sysctl -w net.ipv4.tcp_syncookies=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-012
+    cis_ref: "1.5.3"
+    title: "Ensure address space layout randomization (ASLR) is enabled"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: high
+    description: "Randomises memory layout so exploits cannot rely on fixed addresses."
+    rationale: "ASLR makes many memory-corruption exploits much harder to write and run."
+    impact: "None for normal software."
+    mitre_attack: ["T1055", "T1068"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n kernel.randomize_va_space
+      expected: "2"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-hardenops-aslr.conf
+        - type: sysctl
+          name: kernel.randomize_va_space
+      command: |-
+        printf 'kernel.randomize_va_space = 2\n' > /etc/sysctl.d/99-hardenops-aslr.conf && sysctl -w kernel.randomize_va_space=2
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false

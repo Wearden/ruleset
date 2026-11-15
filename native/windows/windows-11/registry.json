@@ -1,0 +1,938 @@
+{
+  "version": "1",
+  "benchmark_id": "windows-11-native-registry",
+  "ruleset_version": "native-windows-3",
+  "rules": [
+    {
+      "id": "WIN-PWD-001",
+      "title": "Ensure minimum password length is 14 characters or more",
+      "severity": "high",
+      "kind": "password_policy",
+      "name": "min_length",
+      "match": "numeric_gte",
+      "expected": "14"
+    },
+    {
+      "id": "WIN-PWD-002",
+      "title": "Ensure password complexity requirements are enabled",
+      "severity": "high",
+      "kind": "unsupported",
+      "reason": "Manual review required: password complexity is not exposed by the permitted NetUserModals policy provider; password stores are not read."
+    },
+    {
+      "id": "WIN-PWD-003",
+      "title": "Ensure account lockout threshold is 5 invalid attempts or fewer",
+      "severity": "high",
+      "kind": "password_policy",
+      "name": "lockout_threshold",
+      "match": "numeric_lte",
+      "expected": "5"
+    },
+    {
+      "id": "WIN-PWD-004",
+      "title": "Ensure account lockout duration is 15 minutes or more",
+      "severity": "medium",
+      "kind": "password_policy",
+      "name": "lockout_duration_seconds",
+      "match": "numeric_gte",
+      "expected": "900"
+    },
+    {
+      "id": "WIN-PWD-005",
+      "title": "Ensure lockout counter resets after 15 minutes or more",
+      "severity": "low",
+      "kind": "password_policy",
+      "name": "lockout_window_seconds",
+      "match": "numeric_gte",
+      "expected": "900"
+    },
+    {
+      "id": "WIN-PWD-006",
+      "title": "Ensure maximum password age is 60 days or less",
+      "severity": "medium",
+      "kind": "password_policy",
+      "name": "max_age_seconds",
+      "match": "numeric_lte",
+      "expected": "5184000"
+    },
+    {
+      "id": "WIN-PWD-007",
+      "title": "Ensure minimum password age is 1 day or more",
+      "severity": "low",
+      "kind": "password_policy",
+      "name": "min_age_seconds",
+      "match": "numeric_gte",
+      "expected": "86400"
+    },
+    {
+      "id": "WIN-PWD-008",
+      "title": "Ensure password history remembers 24 passwords",
+      "severity": "medium",
+      "kind": "password_policy",
+      "name": "history_length",
+      "match": "numeric_gte",
+      "expected": "24"
+    },
+    {
+      "id": "WIN-PWD-009",
+      "title": "Ensure reversible password encryption is disabled",
+      "severity": "critical",
+      "kind": "unsupported",
+      "reason": "Manual review required: reversible password storage is not exposed by the permitted NetUserModals policy provider; password stores are not read."
+    },
+    {
+      "id": "WIN-PWD-010",
+      "title": "Ensure the Guest account is disabled",
+      "severity": "medium",
+      "kind": "guest_account",
+      "name": "Guest",
+      "match": "equals",
+      "expected": "False"
+    },
+    {
+      "id": "WIN-URA-001",
+      "title": "Ensure 'Deny access to this computer from the network' includes Guests",
+      "severity": "medium",
+      "kind": "user_right",
+      "name": "SeDenyNetworkLogonRight",
+      "match": "set_contains",
+      "expected": "S-1-5-32-546"
+    },
+    {
+      "id": "WIN-URA-002",
+      "title": "Ensure 'Deny log on through Remote Desktop Services' includes Guests",
+      "severity": "medium",
+      "kind": "user_right",
+      "name": "SeDenyRemoteInteractiveLogonRight",
+      "match": "set_contains",
+      "expected": "S-1-5-32-546"
+    },
+    {
+      "id": "WIN-URA-003",
+      "title": "Ensure 'Debug programs' is limited to Administrators",
+      "severity": "critical",
+      "kind": "user_right",
+      "name": "SeDebugPrivilege",
+      "match": "set_equals",
+      "expected": "S-1-5-32-544"
+    },
+    {
+      "id": "WIN-URA-004",
+      "title": "Ensure 'Force shutdown from a remote system' is limited to Administrators",
+      "severity": "medium",
+      "kind": "user_right",
+      "name": "SeRemoteShutdownPrivilege",
+      "match": "set_equals",
+      "expected": "S-1-5-32-544"
+    },
+    {
+      "id": "WIN-URA-005",
+      "title": "Ensure 'Take ownership of files or other objects' is limited to Administrators",
+      "severity": "high",
+      "kind": "user_right",
+      "name": "SeTakeOwnershipPrivilege",
+      "match": "set_equals",
+      "expected": "S-1-5-32-544"
+    },
+    {
+      "id": "WIN-URA-006",
+      "title": "Ensure 'Act as part of the operating system' is assigned to no account",
+      "severity": "critical",
+      "kind": "user_right",
+      "name": "SeTcbPrivilege",
+      "match": "set_equals",
+      "expected": ""
+    },
+    {
+      "id": "WIN-URA-007",
+      "title": "Ensure 'Impersonate a client after authentication' is limited to administrators and service accounts",
+      "severity": "high",
+      "kind": "user_right",
+      "name": "SeImpersonatePrivilege",
+      "match": "set_contains",
+      "expected": "S-1-5-32-544"
+    },
+    {
+      "id": "WIN-URA-008",
+      "title": "Ensure 'Load and unload device drivers' is limited to Administrators",
+      "severity": "high",
+      "kind": "user_right",
+      "name": "SeLoadDriverPrivilege",
+      "match": "set_equals",
+      "expected": "S-1-5-32-544"
+    },
+    {
+      "id": "WIN-URA-009",
+      "title": "Ensure 'Back up files and directories' is limited to Administrators",
+      "severity": "high",
+      "kind": "user_right",
+      "name": "SeBackupPrivilege",
+      "match": "set_equals",
+      "expected": "S-1-5-32-544"
+    },
+    {
+      "id": "WIN-URA-010",
+      "title": "Ensure 'Access this computer from the network' includes Administrators",
+      "severity": "medium",
+      "kind": "user_right",
+      "name": "SeNetworkLogonRight",
+      "match": "set_contains",
+      "expected": "S-1-5-32-544"
+    },
+    {
+      "id": "WIN-URA-011",
+      "title": "Ensure 'Deny log on as a service' includes Guests",
+      "severity": "low",
+      "kind": "user_right",
+      "name": "SeDenyServiceLogonRight",
+      "match": "set_contains",
+      "expected": "S-1-5-32-546"
+    },
+    {
+      "id": "WIN-URA-012",
+      "title": "Ensure 'Deny log on as a batch job' includes Guests",
+      "severity": "low",
+      "kind": "user_right",
+      "name": "SeDenyBatchLogonRight",
+      "match": "set_contains",
+      "expected": "S-1-5-32-546"
+    },
+    {
+      "id": "WIN-SEC-001",
+      "title": "Ensure CTRL+ALT+DEL is required before interactive sign-in",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "DisableCAD",
+      "match": "equals",
+      "expected": "0"
+    },
+    {
+      "id": "WIN-SEC-002",
+      "title": "Ensure the last signed-in user name is not shown at sign-in",
+      "severity": "low",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "dontdisplaylastusername",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-003",
+      "title": "Ensure the machine locks after 15 minutes of inactivity or less",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "InactivityTimeoutSecs",
+      "match": "numeric_lte",
+      "expected": "900"
+    },
+    {
+      "id": "WIN-SEC-004",
+      "title": "Ensure a legal notice caption is set at sign-in",
+      "severity": "low",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "legalnoticecaption",
+      "match": "nonempty",
+      "expected": "set"
+    },
+    {
+      "id": "WIN-SEC-005",
+      "title": "Ensure a legal notice text is set at sign-in",
+      "severity": "low",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "legalnoticetext",
+      "match": "nonempty",
+      "expected": "set"
+    },
+    {
+      "id": "WIN-SEC-006",
+      "title": "Ensure anonymous enumeration of SAM accounts is not allowed",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "RestrictAnonymousSAM",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-007",
+      "title": "Ensure anonymous enumeration of shares is restricted",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "RestrictAnonymous",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-008",
+      "title": "Ensure 'Everyone' permissions do not apply to anonymous users",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "EveryoneIncludesAnonymous",
+      "match": "equals",
+      "expected": "0"
+    },
+    {
+      "id": "WIN-SEC-009",
+      "title": "Ensure blank passwords are only allowed at the console",
+      "severity": "critical",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "LimitBlankPasswordUse",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-010",
+      "title": "Ensure shutdown without logon is disabled",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "shutdownwithoutlogon",
+      "match": "equals",
+      "expected": "0"
+    },
+    {
+      "id": "WIN-SEC-011",
+      "title": "Ensure SMB server always digitally signs communications",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters",
+      "name": "RequireSecuritySignature",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-012",
+      "title": "Ensure SMB client always digitally signs communications",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Services\\LanmanWorkstation\\Parameters",
+      "name": "RequireSecuritySignature",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-013",
+      "title": "Ensure SMB server signs communications when the client agrees",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters",
+      "name": "EnableSecuritySignature",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-014",
+      "title": "Ensure audit policy subcategory settings override legacy category settings",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "SCENoApplyLegacyAuditPolicy",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-015",
+      "title": "Ensure User Account Control (Admin Approval Mode) is enabled",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "EnableLUA",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-016",
+      "title": "Ensure UAC prompts appear on the secure desktop",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "PromptOnSecureDesktop",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-017",
+      "title": "Ensure UAC requires consent on the secure desktop for administrators",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "ConsentPromptBehaviorAdmin",
+      "match": "equals",
+      "expected": "2"
+    },
+    {
+      "id": "WIN-SEC-018",
+      "title": "Ensure built-in Administrator runs in Admin Approval Mode",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "name": "FilterAdministratorToken",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-019",
+      "title": "Ensure users cannot add printer drivers without administrator rights",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Print\\Providers\\LanMan Print Services\\Servers",
+      "name": "AddPrinterDrivers",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SEC-020",
+      "title": "Ensure the domain secure channel is encrypted or signed",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Services\\Netlogon\\Parameters",
+      "name": "RequireSignOrSeal",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-FW-001",
+      "title": "Ensure Windows Defender Firewall is on for the Domain profile",
+      "severity": "high",
+      "kind": "firewall",
+      "name": "Domain.Enabled",
+      "match": "equals",
+      "expected": "True"
+    },
+    {
+      "id": "WIN-FW-002",
+      "title": "Ensure Windows Defender Firewall is on for the Private profile",
+      "severity": "high",
+      "kind": "firewall",
+      "name": "Private.Enabled",
+      "match": "equals",
+      "expected": "True"
+    },
+    {
+      "id": "WIN-FW-003",
+      "title": "Ensure Windows Defender Firewall is on for the Public profile",
+      "severity": "high",
+      "kind": "firewall",
+      "name": "Public.Enabled",
+      "match": "equals",
+      "expected": "True"
+    },
+    {
+      "id": "WIN-FW-004",
+      "title": "Ensure inbound connections are blocked by default on the Domain profile",
+      "severity": "high",
+      "kind": "firewall",
+      "name": "Domain.DefaultInboundAction",
+      "match": "equals",
+      "expected": "Block"
+    },
+    {
+      "id": "WIN-FW-005",
+      "title": "Ensure inbound connections are blocked by default on the Private profile",
+      "severity": "high",
+      "kind": "firewall",
+      "name": "Private.DefaultInboundAction",
+      "match": "equals",
+      "expected": "Block"
+    },
+    {
+      "id": "WIN-FW-006",
+      "title": "Ensure inbound connections are blocked by default on the Public profile",
+      "severity": "high",
+      "kind": "firewall",
+      "name": "Public.DefaultInboundAction",
+      "match": "equals",
+      "expected": "Block"
+    },
+    {
+      "id": "WIN-FW-007",
+      "title": "Ensure dropped packets are logged on the Domain profile",
+      "severity": "medium",
+      "kind": "firewall",
+      "name": "Domain.LogBlocked",
+      "match": "equals",
+      "expected": "True"
+    },
+    {
+      "id": "WIN-FW-008",
+      "title": "Ensure dropped packets are logged on the Public profile",
+      "severity": "medium",
+      "kind": "firewall",
+      "name": "Public.LogBlocked",
+      "match": "equals",
+      "expected": "True"
+    },
+    {
+      "id": "WIN-FW-009",
+      "title": "Ensure the Public firewall log is at least 16 MB",
+      "severity": "low",
+      "kind": "firewall",
+      "name": "Public.LogMaxSizeKilobytes",
+      "match": "numeric_gte",
+      "expected": "16384"
+    },
+    {
+      "id": "WIN-AUD-001",
+      "title": "Ensure 'Audit Credential Validation' is configured",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Credential Validation",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-002",
+      "title": "Ensure 'Audit Kerberos Authentication Service' is configured",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Kerberos Authentication Service",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-003",
+      "title": "Ensure 'Audit Kerberos Service Ticket Operations' is configured",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Kerberos Service Ticket Operations",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-004",
+      "title": "Ensure 'Audit Account Lockout' records failures",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Account Lockout",
+      "match": "equals",
+      "expected": "2"
+    },
+    {
+      "id": "WIN-AUD-005",
+      "title": "Ensure 'Audit Logoff' records successes",
+      "severity": "low",
+      "kind": "audit_policy",
+      "name": "Logoff",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-006",
+      "title": "Ensure 'Audit Logon' records successes and failures",
+      "severity": "high",
+      "kind": "audit_policy",
+      "name": "Logon",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-007",
+      "title": "Ensure 'Audit Special Logon' records successes",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Special Logon",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-008",
+      "title": "Ensure 'Audit Other Logon/Logoff Events' records successes and failures",
+      "severity": "low",
+      "kind": "audit_policy",
+      "name": "Other Logon/Logoff Events",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-009",
+      "title": "Ensure 'Audit Security Group Management' records successes",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Security Group Management",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-010",
+      "title": "Ensure 'Audit User Account Management' records successes and failures",
+      "severity": "high",
+      "kind": "audit_policy",
+      "name": "User Account Management",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-011",
+      "title": "Ensure 'Audit Process Creation' records successes",
+      "severity": "high",
+      "kind": "audit_policy",
+      "name": "Process Creation",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-012",
+      "title": "Ensure 'Audit Directory Service Changes' records successes",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Directory Service Changes",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-013",
+      "title": "Ensure 'Audit Policy Change' records successes and failures",
+      "severity": "high",
+      "kind": "audit_policy",
+      "name": "Audit Policy Change",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-014",
+      "title": "Ensure 'Audit Authentication Policy Change' records successes",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Authentication Policy Change",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-015",
+      "title": "Ensure 'Audit Sensitive Privilege Use' records successes and failures",
+      "severity": "high",
+      "kind": "audit_policy",
+      "name": "Sensitive Privilege Use",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-AUD-016",
+      "title": "Ensure 'Audit Security State Change' records successes",
+      "severity": "low",
+      "kind": "audit_policy",
+      "name": "Security State Change",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-017",
+      "title": "Ensure 'Audit Security System Extension' records successes",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "Security System Extension",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-AUD-018",
+      "title": "Ensure 'Audit System Integrity' records successes and failures",
+      "severity": "medium",
+      "kind": "audit_policy",
+      "name": "System Integrity",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-SVC-001",
+      "title": "Ensure Print Spooler is disabled on servers that do not print",
+      "severity": "high",
+      "kind": "service",
+      "name": "Spooler",
+      "match": "equals",
+      "expected": "Disabled"
+    },
+    {
+      "id": "WIN-SVC-002",
+      "title": "Ensure Remote Registry service is disabled",
+      "severity": "high",
+      "kind": "service",
+      "name": "RemoteRegistry",
+      "match": "equals",
+      "expected": "Disabled"
+    },
+    {
+      "id": "WIN-SVC-003",
+      "title": "Ensure Telnet service is disabled or not installed",
+      "severity": "high",
+      "kind": "service",
+      "name": "TlntSvr",
+      "match": "equals",
+      "expected": "Disabled"
+    },
+    {
+      "id": "WIN-SVC-004",
+      "title": "Ensure SNMP service is disabled unless monitoring requires it",
+      "severity": "medium",
+      "kind": "service",
+      "name": "SNMP",
+      "match": "equals",
+      "expected": "Disabled"
+    },
+    {
+      "id": "WIN-SVC-005",
+      "title": "Ensure Fax service is disabled",
+      "severity": "low",
+      "kind": "service",
+      "name": "Fax",
+      "match": "equals",
+      "expected": "Disabled"
+    },
+    {
+      "id": "WIN-SVC-006",
+      "title": "Ensure Simple TCP/IP Services (echo, daytime, chargen) is disabled",
+      "severity": "medium",
+      "kind": "service",
+      "name": "simptcp",
+      "match": "equals",
+      "expected": "Disabled"
+    },
+    {
+      "id": "WIN-SMB-001",
+      "title": "Ensure LAN Manager authentication level is NTLMv2 only (level 5)",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "LmCompatibilityLevel",
+      "match": "equals",
+      "expected": "5"
+    },
+    {
+      "id": "WIN-SMB-002",
+      "title": "Ensure the LAN Manager hash is not stored",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "NoLMHash",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SMB-003",
+      "title": "Ensure SMBv1 is disabled on the server",
+      "severity": "critical",
+      "kind": "wmi",
+      "name": "MSFT_SmbServerConfiguration.EnableSMB1Protocol",
+      "match": "equals",
+      "expected": "False"
+    },
+    {
+      "id": "WIN-SMB-004",
+      "title": "Ensure the SMBv1 client driver is disabled",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Services\\mrxsmb10",
+      "name": "Start",
+      "match": "equals",
+      "expected": "4"
+    },
+    {
+      "id": "WIN-SMB-005",
+      "title": "Ensure SMB server requires packet signing",
+      "severity": "high",
+      "kind": "wmi",
+      "name": "MSFT_SmbServerConfiguration.RequireSecuritySignature",
+      "match": "equals",
+      "expected": "True"
+    },
+    {
+      "id": "WIN-SMB-006",
+      "title": "Ensure SMB client requires packet signing",
+      "severity": "high",
+      "kind": "wmi",
+      "name": "MSFT_SmbClientConfiguration.RequireSecuritySignature",
+      "match": "equals",
+      "expected": "True"
+    },
+    {
+      "id": "WIN-SMB-007",
+      "title": "Ensure outgoing NTLM traffic to remote servers is denied",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa\\MSV1_0",
+      "name": "RestrictSendingNTLMTraffic",
+      "match": "equals",
+      "expected": "2"
+    },
+    {
+      "id": "WIN-SMB-008",
+      "title": "Ensure NTLM clients use NTLMv2 with 128-bit session security",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa\\MSV1_0",
+      "name": "NTLMMinClientSec",
+      "match": "equals",
+      "expected": "537395200"
+    },
+    {
+      "id": "WIN-SMB-009",
+      "title": "Ensure null sessions are restricted on the file server",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters",
+      "name": "RestrictNullSessAccess",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-SMB-010",
+      "title": "Ensure anonymous access to named pipes is removed",
+      "severity": "medium",
+      "kind": "anonymous_pipes",
+      "name": "NullSessionPipes",
+      "match": "equals",
+      "expected": "none"
+    },
+    {
+      "id": "WIN-RDP-001",
+      "title": "Ensure Network Level Authentication is required for Remote Desktop",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp",
+      "name": "UserAuthentication",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-RDP-002",
+      "title": "Ensure Remote Desktop encryption level is High",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp",
+      "name": "MinEncryptionLevel",
+      "match": "equals",
+      "expected": "3"
+    },
+    {
+      "id": "WIN-RDP-003",
+      "title": "Ensure idle Remote Desktop sessions time out after 15 minutes",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",
+      "name": "MaxIdleTime",
+      "match": "numeric_lte",
+      "expected": "900000"
+    },
+    {
+      "id": "WIN-RDP-004",
+      "title": "Ensure disconnected Remote Desktop sessions end within one minute",
+      "severity": "low",
+      "kind": "registry",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",
+      "name": "MaxDisconnectionTime",
+      "match": "numeric_lte",
+      "expected": "60000"
+    },
+    {
+      "id": "WIN-RDP-005",
+      "title": "Ensure drive redirection is not allowed in Remote Desktop sessions",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",
+      "name": "fDisableCdm",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-RDP-006",
+      "title": "Ensure Remote Desktop does not save passwords",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",
+      "name": "DisablePasswordSaving",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-DEF-001",
+      "title": "Ensure Microsoft Defender real-time protection is on",
+      "severity": "critical",
+      "kind": "wmi",
+      "name": "MSFT_MpPreference.DisableRealtimeMonitoring",
+      "match": "equals",
+      "expected": "False"
+    },
+    {
+      "id": "WIN-DEF-002",
+      "title": "Ensure Microsoft cloud-delivered protection is set to Advanced",
+      "severity": "medium",
+      "kind": "wmi",
+      "name": "MSFT_MpPreference.MAPSReporting",
+      "match": "equals",
+      "expected": "2"
+    },
+    {
+      "id": "WIN-DEF-003",
+      "title": "Ensure potentially unwanted application protection is enabled",
+      "severity": "medium",
+      "kind": "wmi",
+      "name": "MSFT_MpPreference.PUAProtection",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-DEF-004",
+      "title": "Ensure Defender scans network files",
+      "severity": "medium",
+      "kind": "wmi",
+      "name": "MSFT_MpPreference.DisableScanningNetworkFiles",
+      "match": "equals",
+      "expected": "False"
+    },
+    {
+      "id": "WIN-DEF-005",
+      "title": "Ensure Defender network protection is enabled",
+      "severity": "high",
+      "kind": "wmi",
+      "name": "MSFT_MpPreference.EnableNetworkProtection",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-DEF-006",
+      "title": "Ensure autoplay is turned off for all drives",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+      "name": "NoDriveTypeAutoRun",
+      "match": "equals",
+      "expected": "255"
+    },
+    {
+      "id": "WIN-DEF-007",
+      "title": "Ensure Windows Installer always-install-elevated is disabled",
+      "severity": "critical",
+      "kind": "installer_policy",
+      "name": "AlwaysInstallElevated",
+      "match": "equals",
+      "expected": "0"
+    },
+    {
+      "id": "WIN-DEF-008",
+      "title": "Ensure SmartScreen is enabled for apps and files",
+      "severity": "medium",
+      "kind": "registry",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+      "name": "EnableSmartScreen",
+      "match": "equals",
+      "expected": "1"
+    },
+    {
+      "id": "WIN-DEF-009",
+      "title": "Ensure LSA protection (RunAsPPL) is enabled",
+      "severity": "high",
+      "kind": "registry",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+      "name": "RunAsPPL",
+      "match": "equals",
+      "expected": "1"
+    }
+  ]
+}
