@@ -1,7 +1,7 @@
 {
   "version": "1",
   "benchmark_id": "windows-11-native-registry",
-  "ruleset_version": "native-windows-4",
+  "ruleset_version": "native-windows-5",
   "rules": [
     {
       "id": "WIN-PWD-001",
@@ -16,8 +16,10 @@
       "id": "WIN-PWD-002",
       "title": "Ensure password complexity requirements are enabled",
       "severity": "high",
-      "kind": "unsupported",
-      "reason": "Manual review required: password complexity is not exposed by the permitted NetUserModals policy provider; password stores are not read."
+      "kind": "password_flag",
+      "name": "complexity",
+      "match": "equals",
+      "expected": "1"
     },
     {
       "id": "WIN-PWD-003",
@@ -77,8 +79,10 @@
       "id": "WIN-PWD-009",
       "title": "Ensure reversible password encryption is disabled",
       "severity": "critical",
-      "kind": "unsupported",
-      "reason": "Manual review required: reversible password storage is not exposed by the permitted NetUserModals policy provider; password stores are not read."
+      "kind": "password_flag",
+      "name": "reversible_storage",
+      "match": "equals",
+      "expected": "0"
     },
     {
       "id": "WIN-PWD-010",
