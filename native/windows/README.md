@@ -4,9 +4,9 @@ All three assignments use `native-windows-5`, preserve100 original IDs/severitie
 
 | Platform | Manifest SHA256 |
 | --- | --- |
-| Windows10 | `e87fffe7573be31a5b52623e5cdb64c78f4929ed0d27544e36919fe8cd32e782` |
-| Windows11 | `524f383457d247d36ef5e33f71ace7e1c5d19bb1f09b08308175d982f6635438` |
-| Server2022 | `dd4059fbc31815f25f2200e6bfadd9941a8433cf40897049e6210060e1aacfa7` |
+| Windows10 | `1b1ea46c97ba9ae372647af8b1eb6bffed754b6d0cf4b39eda819ff6bc8df520` |
+| Windows11 | `8d7d9b9e52dfabefae728c3f35916baa75452df29664a009ba0d05ab12718023` |
+| Server2022 | `c98ae91362d91aabd94db0201e7192769eb9e8204760c6298d1cee113b395047` |
 
 Version4 deliberately strengthens two native observations. URA007 compares the exact Administrators/Local Service/Network Service/Service SID set, matching the retained remediation list. The old contains-Administrators audit could pass while unrelated accounts retained impersonation grants. Service observations now require both disabled startup and stopped runtime; disabled-but-running services fail, and transitional states return error. An absent service remains compliant. These changes let subsequent reports detect the same stored policy regressions that the typed writers address. Existing-token privileges, future Group Policy reapplication and whole-host attestation are not established.
 
