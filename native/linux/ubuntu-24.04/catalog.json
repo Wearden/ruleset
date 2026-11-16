@@ -1,7 +1,7 @@
 {
   "version": "1",
   "benchmark_id": "ubuntu-24.04-native",
-  "ruleset_version": "native-linux-3",
+  "ruleset_version": "native-linux-4",
   "rules": [
     {
       "id": "LNX-FS-001",
@@ -236,6 +236,78 @@
       "kind": "sysctl",
       "target": "kernel.randomize_va_space",
       "severity": "high"
+    },
+    {
+      "id": "LNX-NET-013",
+      "kind": "sysctl",
+      "target": "kernel.dmesg_restrict",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-014",
+      "kind": "sysctl",
+      "target": "kernel.kptr_restrict",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-015",
+      "kind": "sysctl",
+      "target": "fs.suid_dumpable",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-016",
+      "kind": "sysctl",
+      "target": "fs.protected_hardlinks",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-017",
+      "kind": "sysctl",
+      "target": "fs.protected_symlinks",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-018",
+      "kind": "sysctl",
+      "target": "kernel.yama.ptrace_scope",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-019",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.all.rp_filter",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-020",
+      "kind": "sysctl",
+      "target": "net.ipv4.conf.default.rp_filter",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-021",
+      "kind": "sysctl",
+      "target": "net.ipv4.icmp_ignore_bogus_error_responses",
+      "severity": "low"
+    },
+    {
+      "id": "LNX-NET-022",
+      "kind": "sysctl",
+      "target": "net.ipv6.conf.all.accept_redirects",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-023",
+      "kind": "sysctl",
+      "target": "net.ipv6.conf.default.accept_redirects",
+      "severity": "medium"
+    },
+    {
+      "id": "LNX-NET-024",
+      "kind": "sysctl",
+      "target": "net.ipv6.conf.all.accept_ra",
+      "severity": "medium"
     },
     {
       "id": "LNX-FW-001",

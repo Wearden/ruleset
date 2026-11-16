@@ -1,6 +1,6 @@
 # Ubuntu 22.04 native catalog
 
-Assignment: `ubuntu-22.04-native`. Version: `native-linux-2204-1`.
+Assignment: `ubuntu-22.04-native`. Version: `native-linux-2204-2`.
 Canonical and embedded manifest SHA256: `1e76403efd65f140041cc49d4c3b981619b798f550355056e14cad3b73971c78`.
 
 All 100 original Ubuntu22.04 IDs and severities are retained: 99 entries connect to native providers; USR006 explicitly requires manual review because its legacy audit reads credential-file contents. The shared 88 controls have the same original audit blocks and severities as Ubuntu24.04. Their native definitions and limitations are described in [the Ubuntu24.04 catalog](../ubuntu-24.04/README.md). This is source coverage, not verified CIS compliance or runtime parity.

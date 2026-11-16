@@ -3,7 +3,7 @@
 `catalog.json` is the authoritative full native Linux catalog:
 
 - Benchmark: `ubuntu-24.04-native`
-- Ruleset version: `native-linux-3`
+- Ruleset version: `native-linux-4`
 - Envelope version: `1`
 - 88 controls preserving all IDs and severities from `ruleset/linux/ubuntu-24.04`
 - SHA-256: `9ab1d9cdcbc84b1f5e8b6a7ea4a290e17fa19a945b90e520b3c536928b938155`
