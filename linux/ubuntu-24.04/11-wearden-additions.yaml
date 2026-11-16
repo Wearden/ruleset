@@ -1,0 +1,360 @@
+controls:
+  - id: LNX-NET-013
+    cis_ref: "99.1"
+    title: "Ensure access to the kernel log buffer is restricted"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Limits dmesg to privileged users."
+    rationale: "Kernel messages can reveal addresses and hardware details that help an attacker."
+    impact: "Unprivileged users can no longer read dmesg."
+    mitre_attack: ["T1082"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n kernel.dmesg_restrict
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-013.conf
+        - type: sysctl
+          name: kernel.dmesg_restrict
+      command: |-
+        printf 'kernel.dmesg_restrict = 1\n' > /etc/sysctl.d/99-wearden-LNX-NET-013.conf && sysctl -w kernel.dmesg_restrict=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-014
+    cis_ref: "99.2"
+    title: "Ensure kernel pointers are hidden from users"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Hides kernel symbol addresses even from privileged readers of /proc."
+    rationale: "Kernel addresses help defeat address space randomisation."
+    impact: "Some kernel debugging tools need this relaxed temporarily."
+    mitre_attack: ["T1068"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n kernel.kptr_restrict
+      expected: "2"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-014.conf
+        - type: sysctl
+          name: kernel.kptr_restrict
+      command: |-
+        printf 'kernel.kptr_restrict = 2\n' > /etc/sysctl.d/99-wearden-LNX-NET-014.conf && sysctl -w kernel.kptr_restrict=2
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-015
+    cis_ref: "99.3"
+    title: "Ensure core dumps of set-id programs are disabled"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Prevents set-id programs from writing core dumps."
+    rationale: "Core dumps of privileged programs can expose secrets held in memory."
+    impact: "Crash analysis of set-id programs is not possible."
+    mitre_attack: ["T1003"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n fs.suid_dumpable
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-015.conf
+        - type: sysctl
+          name: fs.suid_dumpable
+      command: |-
+        printf 'fs.suid_dumpable = 0\n' > /etc/sysctl.d/99-wearden-LNX-NET-015.conf && sysctl -w fs.suid_dumpable=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-016
+    cis_ref: "99.4"
+    title: "Ensure hard link creation to unowned files is restricted"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Only allows hard links to files the user owns or can write."
+    rationale: "Blocks a class of privilege escalation through links to sensitive files."
+    impact: "None for normal software."
+    mitre_attack: ["T1068"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n fs.protected_hardlinks
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-016.conf
+        - type: sysctl
+          name: fs.protected_hardlinks
+      command: |-
+        printf 'fs.protected_hardlinks = 1\n' > /etc/sysctl.d/99-wearden-LNX-NET-016.conf && sysctl -w fs.protected_hardlinks=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-017
+    cis_ref: "99.5"
+    title: "Ensure following symbolic links in sticky directories is restricted"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Restricts symlink following in world-writable sticky directories."
+    rationale: "Blocks time-of-check races that abuse symlinks in /tmp."
+    impact: "None for normal software."
+    mitre_attack: ["T1068"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n fs.protected_symlinks
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-017.conf
+        - type: sysctl
+          name: fs.protected_symlinks
+      command: |-
+        printf 'fs.protected_symlinks = 1\n' > /etc/sysctl.d/99-wearden-LNX-NET-017.conf && sysctl -w fs.protected_symlinks=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-018
+    cis_ref: "99.6"
+    title: "Ensure ptrace is limited to descendant processes"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Restricts process tracing to a process own children."
+    rationale: "Stops one compromised process from reading memory of unrelated processes."
+    impact: "Debuggers that attach to running processes need elevated rights."
+    mitre_attack: ["T1055"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n kernel.yama.ptrace_scope
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-018.conf
+        - type: sysctl
+          name: kernel.yama.ptrace_scope
+      command: |-
+        printf 'kernel.yama.ptrace_scope = 1\n' > /etc/sysctl.d/99-wearden-LNX-NET-018.conf && sysctl -w kernel.yama.ptrace_scope=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-019
+    cis_ref: "99.7"
+    title: "Ensure reverse path filtering is enabled on all interfaces"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Drops packets whose source address could not be reached through the receiving interface."
+    rationale: "Reduces source address spoofing."
+    impact: "Hosts with asymmetric routing may lose traffic."
+    mitre_attack: ["T1498"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.all.rp_filter
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-019.conf
+        - type: sysctl
+          name: net.ipv4.conf.all.rp_filter
+      command: |-
+        printf 'net.ipv4.conf.all.rp_filter = 1\n' > /etc/sysctl.d/99-wearden-LNX-NET-019.conf && sysctl -w net.ipv4.conf.all.rp_filter=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: LNX-NET-020
+    cis_ref: "99.8"
+    title: "Ensure reverse path filtering is enabled on new interfaces"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Applies strict reverse path filtering to interfaces created later."
+    rationale: "Keeps spoofing protection when interfaces are added."
+    impact: "Hosts with asymmetric routing may lose traffic."
+    mitre_attack: ["T1498"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.conf.default.rp_filter
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-020.conf
+        - type: sysctl
+          name: net.ipv4.conf.default.rp_filter
+      command: |-
+        printf 'net.ipv4.conf.default.rp_filter = 1\n' > /etc/sysctl.d/99-wearden-LNX-NET-020.conf && sysctl -w net.ipv4.conf.default.rp_filter=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
+
+  - id: LNX-NET-021
+    cis_ref: "99.9"
+    title: "Ensure bogus ICMP error responses are ignored"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: low
+    description: "Ignores malformed ICMP error replies instead of logging them."
+    rationale: "Prevents log flooding by hostile broadcast replies."
+    impact: "None for normal software."
+    mitre_attack: ["T1499"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv4.icmp_ignore_bogus_error_responses
+      expected: "1"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-021.conf
+        - type: sysctl
+          name: net.ipv4.icmp_ignore_bogus_error_responses
+      command: |-
+        printf 'net.ipv4.icmp_ignore_bogus_error_responses = 1\n' > /etc/sysctl.d/99-wearden-LNX-NET-021.conf && sysctl -w net.ipv4.icmp_ignore_bogus_error_responses=1
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-022
+    cis_ref: "99.10"
+    title: "Ensure IPv6 redirects are not accepted on all interfaces"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Ignores ICMPv6 redirect messages."
+    rationale: "Redirects can reroute traffic through an attacker."
+    impact: "Hosts relying on router redirects must use static routes."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv6.conf.all.accept_redirects
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-022.conf
+        - type: sysctl
+          name: net.ipv6.conf.all.accept_redirects
+      command: |-
+        printf 'net.ipv6.conf.all.accept_redirects = 0\n' > /etc/sysctl.d/99-wearden-LNX-NET-022.conf && sysctl -w net.ipv6.conf.all.accept_redirects=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-023
+    cis_ref: "99.11"
+    title: "Ensure IPv6 redirects are not accepted on new interfaces"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Applies the IPv6 redirect policy to interfaces created later."
+    rationale: "Keeps the protection when interfaces are added."
+    impact: "Hosts relying on router redirects must use static routes."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv6.conf.default.accept_redirects
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-023.conf
+        - type: sysctl
+          name: net.ipv6.conf.default.accept_redirects
+      command: |-
+        printf 'net.ipv6.conf.default.accept_redirects = 0\n' > /etc/sysctl.d/99-wearden-LNX-NET-023.conf && sysctl -w net.ipv6.conf.default.accept_redirects=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: false
+
+  - id: LNX-NET-024
+    cis_ref: "99.12"
+    title: "Ensure IPv6 router advertisements are not accepted"
+    os: linux
+    category: "Network kernel parameters"
+    level: 1
+    severity: medium
+    description: "Ignores IPv6 router advertisements."
+    rationale: "Rogue advertisements can redirect traffic or configure hostile addresses."
+    impact: "Hosts using automatic IPv6 configuration lose it and need static addresses."
+    mitre_attack: ["T1557"]
+    audit:
+      type: sysctl
+      command: |-
+        sysctl -n net.ipv6.conf.all.accept_ra
+      expected: "0"
+      match: equals
+    remediation:
+      backup:
+        - type: file
+          path: /etc/sysctl.d/99-wearden-LNX-NET-024.conf
+        - type: sysctl
+          name: net.ipv6.conf.all.accept_ra
+      command: |-
+        printf 'net.ipv6.conf.all.accept_ra = 0\n' > /etc/sysctl.d/99-wearden-LNX-NET-024.conf && sysctl -w net.ipv6.conf.all.accept_ra=0
+    rollback:
+      strategy: restore_backup
+    reboot_required: false
+    risky: true
