@@ -386,7 +386,7 @@ controls:
     description: "Makes the detailed audit policy (auditpol) take precedence over the older category-level audit settings."
     rationale: "Mixed audit modes make it unclear what is actually being recorded."
     impact: "None when the advanced audit policy is configured as in WIN-AUD controls."
-    mitre_attack: ["T1562.002"]
+    mitre_attack: ["T1685.001"]
     audit:
       type: registry
       command: |-

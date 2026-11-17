@@ -9,7 +9,7 @@ controls:
     description: "Keeps Defender scanning files and processes as they are opened or run."
     rationale: "Real-time protection is the first line of defence against malware execution."
     impact: "None for normal use. Some third-party AV products may disable Defender. In that case the control is not applicable."
-    mitre_attack: ["T1562.001", "T1204"]
+    mitre_attack: ["T1685", "T1204"]
     audit:
       type: command
       command: |-

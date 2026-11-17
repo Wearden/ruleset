@@ -345,7 +345,7 @@ controls:
     description: "Records changes to the audit policy itself."
     rationale: "Attackers who switch off auditing first try to hide their activity. This event shows it."
     impact: "Small increase in security log volume."
-    mitre_attack: ["T1562.002"]
+    mitre_attack: ["T1685.001"]
     audit:
       type: auditpol
       command: |-
@@ -373,7 +373,7 @@ controls:
     description: "Records changes to trust and authentication policy."
     rationale: "Weakening authentication policy is a quiet way to make later attacks easier."
     impact: "Small increase in log volume."
-    mitre_attack: ["T1556", "T1562"]
+    mitre_attack: ["T1556", "T1685"]
     audit:
       type: auditpol
       command: |-
