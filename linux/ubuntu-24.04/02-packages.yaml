@@ -39,7 +39,7 @@ controls:
     description: "Installs AIDE, which records file hashes so that unexpected changes to system files can be detected."
     rationale: "Without integrity checks, tampering with binaries and configuration can go unnoticed."
     impact: "Adds a daily or weekly scan load and needs its database initialised."
-    mitre_attack: ["T1562.001", "T1036"]
+    mitre_attack: ["T1685", "T1036"]
     audit:
       type: command
       command: |-

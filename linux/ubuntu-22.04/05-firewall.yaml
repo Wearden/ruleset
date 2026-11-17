@@ -9,7 +9,7 @@ controls:
     description: "Installs ufw, a simple front end to the kernel packet filter."
     rationale: "A host firewall limits which network services an attacker can reach even if one is exposed."
     impact: "None until the firewall is enabled. Enabling it is a separate control."
-    mitre_attack: ["T1562.004", "T1046"]
+    mitre_attack: ["T1686", "T1046"]
     audit:
       type: command
       command: |-
@@ -39,7 +39,7 @@ controls:
     description: "Sets the firewall so inbound connections are dropped unless a rule allows them."
     rationale: "Default-deny means only deliberately opened services are reachable."
     impact: "Every inbound service not yet allowed (SSH, RDP, WinRM, web) is blocked. Allow SSH first (LNX-FW-004), or you can lock yourself out."
-    mitre_attack: ["T1562.004", "T1021"]
+    mitre_attack: ["T1686", "T1021"]
     audit:
       type: command
       command: |-
@@ -129,7 +129,7 @@ controls:
     description: "Turns the firewall on so the default policy and rules take effect."
     rationale: "Configured but disabled rules protect nothing."
     impact: "Can lock out remote administration if SSH, RDP or WinRM are not allowed first. The remediation allows SSH before enabling."
-    mitre_attack: ["T1562.004"]
+    mitre_attack: ["T1686"]
     audit:
       type: command
       command: |-
@@ -159,7 +159,7 @@ controls:
     description: "Records blocked and allowed connections in the system log."
     rationale: "Firewall logs are how blocked attack attempts become visible."
     impact: "Log volume increases on busy hosts."
-    mitre_attack: ["T1562.002", "T1595"]
+    mitre_attack: ["T1685.001", "T1595"]
     audit:
       type: command
       command: |-

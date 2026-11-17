@@ -9,7 +9,7 @@ controls:
     description: "Stores journal logs on disk so they survive reboots."
     rationale: "Logs that vanish at reboot hide what happened before an attacker rebooted the host."
     impact: "Journal files use disk space. Size is limited by the configured maximum."
-    mitre_attack: ["T1070.002", "T1562.002"]
+    mitre_attack: ["T1685.006", "T1685.001"]
     audit:
       type: command
       command: |-
@@ -37,7 +37,7 @@ controls:
     description: "Compresses rotated journal files to save disk space."
     rationale: "Keeping logs longer within the same disk budget preserves evidence."
     impact: "Slight CPU cost when rotating logs."
-    mitre_attack: ["T1070.002"]
+    mitre_attack: ["T1685.006"]
     audit:
       type: command
       command: |-
@@ -93,7 +93,7 @@ controls:
     description: "Installs rsyslog so logs are written to traditional text files that tools and SIEMs expect."
     rationale: "Text logs are easier to ship to a central collector and to protect."
     impact: "Duplicate log writing on hosts that already use journald only."
-    mitre_attack: ["T1562.002"]
+    mitre_attack: ["T1685.001"]
     audit:
       type: command
       command: |-
@@ -123,7 +123,7 @@ controls:
     description: "Installs logrotate so log files are rotated and do not fill the disk."
     rationale: "A full disk stops logging, and an attacker can exploit that to hide activity."
     impact: "None on standard Ubuntu. Some minimal images need the package."
-    mitre_attack: ["T1562.002"]
+    mitre_attack: ["T1685.001"]
     audit:
       type: command
       command: |-
@@ -153,7 +153,7 @@ controls:
     description: "Configures sudo to write every privileged command to /var/log/sudo.log."
     rationale: "A separate sudo log gives a clear record of who ran what as root."
     impact: "Sudo logs grow with use. Logrotate should cover the new file."
-    mitre_attack: ["T1548.003", "T1562.002"]
+    mitre_attack: ["T1548.003", "T1685.001"]
     audit:
       type: command
       command: |-

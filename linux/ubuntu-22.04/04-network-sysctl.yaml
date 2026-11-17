@@ -249,7 +249,7 @@ controls:
     description: "Logs packets with impossible source addresses so spoofing attempts show up in the logs."
     rationale: "Spoofed traffic is a sign of reconnaissance or attack and should be visible."
     impact: "Log volume rises on hosts that see spoofed traffic."
-    mitre_attack: ["T1562.002", "T1595"]
+    mitre_attack: ["T1685.001", "T1595"]
     audit:
       type: sysctl
       command: |-

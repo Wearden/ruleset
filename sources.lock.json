@@ -9,7 +9,7 @@
     },
     {
       "path": "linux/ubuntu-22.04/02-packages.yaml",
-      "sha256": "bf6a86fb9cb36972eece671f956d53cc7a38ecbcc7b7e693df209d1ad2d491e3",
+      "sha256": "0bfac78f58454b0d3e3278c2a2408bc6f4ac653f4f746d89b358064900248433",
       "status": "legacy-unverified"
     },
     {
@@ -19,27 +19,27 @@
     },
     {
       "path": "linux/ubuntu-22.04/04-network-sysctl.yaml",
-      "sha256": "d255b0fb70754cce31bbfc87cc3d0eb2c33038464f0d14060cb599f3ca52f503",
+      "sha256": "cfe8ddd6038b16471fc8614c085f719c630cc834b0f3ee0ccd3d086a47b7117d",
       "status": "legacy-unverified"
     },
     {
       "path": "linux/ubuntu-22.04/05-firewall.yaml",
-      "sha256": "bace57bccaae962f38ba46db0db919ba34b6eef0125bcb45427ba63c2f0f307e",
+      "sha256": "bbc209da0d2067699ca3ec12b8cab615c556b1ac9f01b6fa227ecbc905ff45da",
       "status": "legacy-unverified"
     },
     {
       "path": "linux/ubuntu-22.04/06-auditd.yaml",
-      "sha256": "9b5125d5266a97e2f9ff2f9634d3f891c9bdd6a7ade5c40cb8d1cb2d1e7a2cdb",
+      "sha256": "f3bc2b519811b402e23420e3b57bf0cc76c2ee12ea9c1ebe6e4693ef39e51b7c",
       "status": "legacy-unverified"
     },
     {
       "path": "linux/ubuntu-22.04/07-logging.yaml",
-      "sha256": "e946238abae0896f4bab9ef48b93c023fc5427f44633debf0bf5dce650fc5219",
+      "sha256": "89612543682770a5bda496ced59ca3dd248f83090ecf0a2c5080fb227a7cb320",
       "status": "legacy-unverified"
     },
     {
       "path": "linux/ubuntu-22.04/08-ssh.yaml",
-      "sha256": "2bc0462851d0b1b870bf529862326cd47d1725bc9d4e7b990c9b8f57dc622bd8",
+      "sha256": "58f01b1c96e189510231a6f8b92bba54e8a8562ad790f7f5d7275f75bb3e9b40",
       "status": "legacy-unverified"
     },
     {
@@ -64,7 +64,7 @@
     },
     {
       "path": "linux/ubuntu-24.04/02-packages.yaml",
-      "sha256": "bf6a86fb9cb36972eece671f956d53cc7a38ecbcc7b7e693df209d1ad2d491e3",
+      "sha256": "0bfac78f58454b0d3e3278c2a2408bc6f4ac653f4f746d89b358064900248433",
       "status": "legacy-unverified"
     },
     {
@@ -74,22 +74,22 @@
     },
     {
       "path": "linux/ubuntu-24.04/04-network-sysctl.yaml",
-      "sha256": "d255b0fb70754cce31bbfc87cc3d0eb2c33038464f0d14060cb599f3ca52f503",
+      "sha256": "cfe8ddd6038b16471fc8614c085f719c630cc834b0f3ee0ccd3d086a47b7117d",
       "status": "legacy-unverified"
     },
     {
       "path": "linux/ubuntu-24.04/05-firewall.yaml",
-      "sha256": "bace57bccaae962f38ba46db0db919ba34b6eef0125bcb45427ba63c2f0f307e",
+      "sha256": "bbc209da0d2067699ca3ec12b8cab615c556b1ac9f01b6fa227ecbc905ff45da",
       "status": "legacy-unverified"
     },
     {
       "path": "linux/ubuntu-24.04/07-logging.yaml",
-      "sha256": "e946238abae0896f4bab9ef48b93c023fc5427f44633debf0bf5dce650fc5219",
+      "sha256": "89612543682770a5bda496ced59ca3dd248f83090ecf0a2c5080fb227a7cb320",
       "status": "legacy-unverified"
     },
     {
       "path": "linux/ubuntu-24.04/08-ssh.yaml",
-      "sha256": "2bc0462851d0b1b870bf529862326cd47d1725bc9d4e7b990c9b8f57dc622bd8",
+      "sha256": "58f01b1c96e189510231a6f8b92bba54e8a8562ad790f7f5d7275f75bb3e9b40",
       "status": "legacy-unverified"
     },
     {
@@ -119,17 +119,17 @@
     },
     {
       "path": "windows/server-2022/03-security-options.yaml",
-      "sha256": "c59f0951f273f4860f4fe84f261f44f631165b2e9dad679a84cf4712e36900b4",
+      "sha256": "65701f66a58119f14a6c4175d93a5a007278179eb5179d7d914e05a70512e2ef",
       "status": "legacy-unverified"
     },
     {
       "path": "windows/server-2022/04-firewall.yaml",
-      "sha256": "b97e280cba32ebaf072ff31827eb48f49c3ddf1eef627c0a22880dd0b1cac26e",
+      "sha256": "de58d01b00de87d812933eb62bab8c005ce73f9239d30a48b01bd40e7487776f",
       "status": "legacy-unverified"
     },
     {
       "path": "windows/server-2022/05-audit-policy.yaml",
-      "sha256": "e601f91b08047ca3ae022b881669c9469b8490632cf250377bb993791b6e41c3",
+      "sha256": "ebd330ecf58a6f46b625e3910d8a6b9e5ea2de914b199f80879e8a1a7a3cbd42",
       "status": "legacy-unverified"
     },
     {
@@ -149,7 +149,7 @@
     },
     {
       "path": "windows/server-2022/09-defender-misc.yaml",
-      "sha256": "31ea0f3e59532d3f7c73d26f0a8ee8e1574a1b18c00c552f6ac91521e419b80d",
+      "sha256": "91927a7f13ceaf3cb9082b0f9cb4f223a69157c7c0026391bcc3993a4dc3f719",
       "status": "legacy-unverified"
     },
     {
@@ -169,17 +169,17 @@
     },
     {
       "path": "windows/windows-10/03-security-options.yaml",
-      "sha256": "84e4019784e3156da49ee112e825246cb2b491958eff4f8d30c8423446a83c22",
+      "sha256": "847e1a7779ec4bd6a165b35aa757edd3497ae6c889e52e0f4abf52fce0ba28ba",
       "status": "legacy-unverified"
     },
     {
       "path": "windows/windows-10/04-firewall.yaml",
-      "sha256": "b97e280cba32ebaf072ff31827eb48f49c3ddf1eef627c0a22880dd0b1cac26e",
+      "sha256": "de58d01b00de87d812933eb62bab8c005ce73f9239d30a48b01bd40e7487776f",
       "status": "legacy-unverified"
     },
     {
       "path": "windows/windows-10/05-audit-policy.yaml",
-      "sha256": "e601f91b08047ca3ae022b881669c9469b8490632cf250377bb993791b6e41c3",
+      "sha256": "ebd330ecf58a6f46b625e3910d8a6b9e5ea2de914b199f80879e8a1a7a3cbd42",
       "status": "legacy-unverified"
     },
     {
@@ -199,7 +199,7 @@
     },
     {
       "path": "windows/windows-10/09-defender-misc.yaml",
-      "sha256": "8ef1634adc2a110bcad7a4eb1c66ba5ca0413132d12e9ae4e3878781ede48ca1",
+      "sha256": "5052243a81af2b4e9516902793d7eb81c39343f7e9c4cd868d2dfb2755590df8",
       "status": "legacy-unverified"
     },
     {
@@ -219,17 +219,17 @@
     },
     {
       "path": "windows/windows-11/03-security-options.yaml",
-      "sha256": "84e4019784e3156da49ee112e825246cb2b491958eff4f8d30c8423446a83c22",
+      "sha256": "847e1a7779ec4bd6a165b35aa757edd3497ae6c889e52e0f4abf52fce0ba28ba",
       "status": "legacy-unverified"
     },
     {
       "path": "windows/windows-11/04-firewall.yaml",
-      "sha256": "b97e280cba32ebaf072ff31827eb48f49c3ddf1eef627c0a22880dd0b1cac26e",
+      "sha256": "de58d01b00de87d812933eb62bab8c005ce73f9239d30a48b01bd40e7487776f",
       "status": "legacy-unverified"
     },
     {
       "path": "windows/windows-11/05-audit-policy.yaml",
-      "sha256": "e601f91b08047ca3ae022b881669c9469b8490632cf250377bb993791b6e41c3",
+      "sha256": "ebd330ecf58a6f46b625e3910d8a6b9e5ea2de914b199f80879e8a1a7a3cbd42",
       "status": "legacy-unverified"
     },
     {
@@ -249,7 +249,7 @@
     },
     {
       "path": "windows/windows-11/09-defender-misc.yaml",
-      "sha256": "8ef1634adc2a110bcad7a4eb1c66ba5ca0413132d12e9ae4e3878781ede48ca1",
+      "sha256": "5052243a81af2b4e9516902793d7eb81c39343f7e9c4cd868d2dfb2755590df8",
       "status": "legacy-unverified"
     },
     {
