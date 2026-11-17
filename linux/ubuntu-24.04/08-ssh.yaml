@@ -9,7 +9,7 @@ controls:
     description: "Makes the SSH server configuration readable and writable only by root."
     rationale: "Anyone who can edit the SSH configuration can weaken or backdoor remote access."
     impact: "None for normal administration. Editing the file requires root."
-    mitre_attack: ["T1098.004", "T1562.001"]
+    mitre_attack: ["T1098.004", "T1685"]
     audit:
       type: file_regex
       command: |-
@@ -37,7 +37,7 @@ controls:
     description: "Makes sshd record logins and key fingerprints in the logs."
     rationale: "Login records are the evidence needed to detect key misuse and brute-force attempts."
     impact: "Slightly more log volume."
-    mitre_attack: ["T1562.002", "T1110"]
+    mitre_attack: ["T1685.001", "T1110"]
     audit:
       type: command
       command: |-

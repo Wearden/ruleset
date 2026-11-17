@@ -9,7 +9,7 @@ controls:
     description: "Turns on the host firewall while the machine is on a domain network."
     rationale: "A host firewall limits which services an attacker on the segment can reach."
     impact: "Remote management ports are blocked unless allowed. The remediation enables the WinRM and RDP rules first."
-    mitre_attack: ["T1562.004", "T1046"]
+    mitre_attack: ["T1686", "T1046"]
     audit:
       type: command
       command: |-
@@ -37,7 +37,7 @@ controls:
     description: "Turns on the host firewall on private networks."
     rationale: "Private networks still contain other users' machines and malware."
     impact: "Remote management ports are blocked unless allowed. The remediation enables the WinRM and RDP rules first."
-    mitre_attack: ["T1562.004", "T1046"]
+    mitre_attack: ["T1686", "T1046"]
     audit:
       type: command
       command: |-
@@ -65,7 +65,7 @@ controls:
     description: "Turns on the host firewall on public networks such as cafés and hotels."
     rationale: "Public networks are the most hostile, so the firewall matters most there."
     impact: "Remote management ports are blocked unless allowed. The remediation enables the WinRM and RDP rules first."
-    mitre_attack: ["T1562.004", "T1046"]
+    mitre_attack: ["T1686", "T1046"]
     audit:
       type: command
       command: |-
@@ -93,7 +93,7 @@ controls:
     description: "Drops inbound connections that have no allow rule, on domain networks."
     rationale: "Default-deny means only deliberately published services are reachable."
     impact: "Any inbound service without an allow rule stops. WinRM and RDP are allowed before this change is applied."
-    mitre_attack: ["T1562.004", "T1021"]
+    mitre_attack: ["T1686", "T1021"]
     audit:
       type: command
       command: |-
@@ -121,7 +121,7 @@ controls:
     description: "Drops inbound connections that have no allow rule, on private networks."
     rationale: "Default-deny keeps unplanned services off the network."
     impact: "Any inbound service without an allow rule stops."
-    mitre_attack: ["T1562.004", "T1021"]
+    mitre_attack: ["T1686", "T1021"]
     audit:
       type: command
       command: |-
@@ -149,7 +149,7 @@ controls:
     description: "Drops inbound connections that have no allow rule, on public networks."
     rationale: "Public networks are the most hostile, so default-deny matters most there."
     impact: "Any inbound service without an allow rule stops."
-    mitre_attack: ["T1562.004", "T1021"]
+    mitre_attack: ["T1686", "T1021"]
     audit:
       type: command
       command: |-
@@ -177,7 +177,7 @@ controls:
     description: "Writes blocked inbound connections to the firewall log on domain networks."
     rationale: "Blocked connection logs reveal scanning and attack attempts."
     impact: "Log file grows with blocked traffic."
-    mitre_attack: ["T1562.002", "T1595"]
+    mitre_attack: ["T1685.001", "T1595"]
     audit:
       type: command
       command: |-
@@ -205,7 +205,7 @@ controls:
     description: "Writes blocked inbound connections to the firewall log on public networks."
     rationale: "Public-network scanning is the first sign of an attack on a laptop."
     impact: "Log file grows with blocked traffic."
-    mitre_attack: ["T1562.002", "T1595"]
+    mitre_attack: ["T1685.001", "T1595"]
     audit:
       type: command
       command: |-

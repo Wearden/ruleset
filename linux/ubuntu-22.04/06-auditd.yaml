@@ -9,7 +9,7 @@ controls:
     description: "Installs the Linux audit framework that records security-relevant system events."
     rationale: "Without an audit trail, intrusions and misuse cannot be reconstructed."
     impact: "None until rules are loaded. Audit logs use disk space."
-    mitre_attack: ["T1562.002", "T1070"]
+    mitre_attack: ["T1685.001", "T1070"]
     audit:
       type: command
       command: |-
@@ -39,7 +39,7 @@ controls:
     description: "Starts auditd at boot so events are recorded from the first moment."
     rationale: "An audit service that is not running records nothing."
     impact: "None beyond audit log disk use."
-    mitre_attack: ["T1562.002"]
+    mitre_attack: ["T1685.001"]
     audit:
       type: service
       command: |-
@@ -179,7 +179,7 @@ controls:
     description: "Records changes to AppArmor profiles and policy."
     rationale: "Disabling confinement is a defence-evasion step that should be visible."
     impact: "Small increase in audit volume."
-    mitre_attack: ["T1562.001"]
+    mitre_attack: ["T1685"]
     audit:
       type: command
       command: |-
