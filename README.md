@@ -17,7 +17,7 @@ Hardening content for the Wearden Go agents. These are draft rules, not a certif
 
 Benchmark metadata contains `id`, `os`, `name`, `version` and `profiles`. A profile selects `controls: all` or explicit `control_ids`. Each control has a stable ID, `cis_ref`, title, OS, category, level, severity, description, rationale, impact, MITRE references, audit, remediation, rollback and reboot/risk flags. Audit has `type`, `command`, `expected` and `match`. The original schema is unchanged; its Python definition remains the legacy reference until the Go validator is implemented.
 
-Legacy IDs and draft CIS references are preserved for traceability, not independently verified. In particular `full-top-100` is a historical profile ID; Ubuntu24.04 contains88 controls and Ubuntu22.04 contains100 controls. Do not infer 100 checks or certified compliance from names.
+Legacy IDs and draft CIS references are preserved for traceability, not independently verified. In particular `full-top-100` is a historical profile ID; The same is true of the counts: Ubuntu 24.04 has 100 controls and Ubuntu 22.04 has 112 (ubuntu-24.04 has no separate `06-auditd.yaml`). Do not infer 100 checks or certified compliance from names.
 
 ## Sources and usage
 
@@ -33,6 +33,6 @@ From this repository run:
 python tools/verify_sources.py
 ```
 
-This verifies locked bytes, source-path containment, mapping references and local control IDs using Python's standard library. It does not execute audit/remediation scripts, render upstream templates, validate the complete YAML schema, or prove OS behavior. The first 10 filesystem controls have upstream intent mappings; native implementations and remaining categories are pending.
+This verifies locked bytes, source-path containment, mapping references and local control IDs using Python's standard library. It does not execute audit/remediation scripts, render upstream templates, validate the complete YAML schema, or prove OS behavior. Only the first 10 filesystem controls have upstream intent mappings; the native catalogs under `native/` cover 100 rules per platform (112 for Ubuntu 22.04).
 
 Agents must implement reviewed local checks. YAML audit/remediation command strings are reference data, not permission to execute arbitrary commands received from core.
